@@ -1,0 +1,43 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DiaryTrove</title>
+    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{%url 'index'%}" id="title"><b> DiaryTrove </b></a>
+        <div id="buttonrow">
+            {%if logged_in%}
+            <a href="%url 'home'%">{%trans "Home"%}</a>
+            <a href="%url 'logout'%">{%trans "Log out"%}</a>
+            {%else%}
+            <a href="%url 'login'%">{%trans "Log in"%}</a>
+            <a href="%url 'signup'%">{%trans "Sign up"%}</a>
+            {%endif%}
+        </div>
+    </header>
+    <main>
+        <p id="tagline"><i>{%trans '"Because your memories are your most precious data"'%}</i></p>
+        <br>
+        <h2>{%trans "What is DiaryTrove?"%}</h2>
+        <p>{%trans "DiaryTrove is a mix between a personal diary and a time capsule."%}</p>
+        <p>{%trans "Whenever you feel like so, you can add a new entry, a memory, where you can tell anything you want, pick a mood, a color, and even add images or other medias."%}</p>
+        <p>{%trans "This memory will then be locked for a certain amount of time. Once the time comes, the memory will be unlocked, and the future you will be able to rediscover your past memories!"%}</p>
+        <p>{%trans "You will also receive an email when memories are unlocked, so if you write memories each week, then after the delay passes you'll receive old memories each week too!"%}</p>
+        <p>{%trans "On the website, you can write new memories, browse through them, and even get a random one on your home page!"%}</p>
+        <br><br>
+        <h3>{%trans "What are you waiting for? Register right now to start saving your precious memories!"%}</h3>
+    </main>
+    <footer>
+        <p id="contact">{%trans "Contact:"%} <a href="mailto:diarytrove.app@gmail.com" target="_blank">diarytrove.app@gmail.com</a></p>
+        <p>{%trans "GPL-3.0 license"%}</p>
+        <a href="https://github.com/ilwan07/DiaryTrove" target="_blank"><img src="{%static 'diarytrove/assets/github_icon.svg'%}" alt="{%trans 'github icon'%}"></a>
+    </footer>
+</body>
+</html>
