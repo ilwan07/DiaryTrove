@@ -32,17 +32,51 @@ def auth_login(request:HttpRequest):
     """
     Page to log into an existing account
     """
+    if request.user.is_authenticated:
+        return redirect("home")
+    
+    error_message = None
     if request.method == "POST":
         # Handle the login data
         form = LoginForm(request.POST)
         if form.is_valid():
-            pass  #TODO: hande login data
+            username_email = form.cleaned_data["username_email"]
+            password = form.cleaned_data["password"]
+
+            login_type = "email" if "@" in username_email else "username"
+            if login_type == "email":
+                username_email = username_email.lower()  # emails are case insensitive, so standarize everything to lowercase
+            
+            # Check the validity of the credentials
+            try:
+                if login_type == "username":
+                    user_object = User.objects.get(username=username_email)
+                else:
+                    user_object = User.objects.get(email=username_email)
+            except User.DoesNotExist:
+                error_message = _("This username/email isn't registered, sign up for a new account if you don't already have one.")
+            except User.MultipleObjectsReturned:
+                error_message = _("Multiple users are using this email, please use your username instead.")
+
+            else:
+                # Verify the password
+                username = user_object.username
+                user = authenticate(request, username=username, password=password)
+                if user is None:
+                    error_message = _("The entered password is wrong, try again.")
+                else:
+                    # Log the user in then redirect
+                    login(request, user)
+                    if "next" in request.POST:
+                        return redirect(request.POST["next"])
+                    else:
+                        return redirect("home")
     
     else:
         # Create the form and give the page
         form = LoginForm()
     
-    return render(request, "diarytrove/login.html", {"form": form})
+    return render(request, "diarytrove/login.html", {"form": form, "error":error_message})
 
 
 def auth_logout(request:HttpRequest):

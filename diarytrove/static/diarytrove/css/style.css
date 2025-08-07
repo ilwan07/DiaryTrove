@@ -93,7 +93,7 @@ footer img {
     height: 2rem;
 }
 
-#formcontent {
+#smallform #formcontent {
     font-size: 1.3rem;
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -102,15 +102,15 @@ footer img {
     align-items: center;
 }
 
-#formcontent > div {
+#smallform #formcontent > div {
     display: contents;
 }
 
-#formcontent label {
+#smallform #formcontent label {
     justify-self: left;
 }
 
-#formcontent input {
+#smallform #formcontent input {
     font-size: 1.2rem;
     padding: 0.2rem;
     border: 1.5px solid #10a9eb;
@@ -118,7 +118,7 @@ footer img {
     width: 35%;
 }
 
-form input[type="submit"] {
+#smallform input[type="submit"] {
     transition: 0.2s;
     font-size: 1.2rem;
     margin-top: 1rem;
@@ -127,7 +127,7 @@ form input[type="submit"] {
     border-radius: 8px;
 }
 
-form input[type="submit"]:hover {
+#smallform input[type="submit"]:hover {
     transition: 0.2s;
     padding: 0.6rem;
 }

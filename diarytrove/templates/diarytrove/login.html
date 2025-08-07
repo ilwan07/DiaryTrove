@@ -18,7 +18,8 @@
         </div>
     </header>
     <main>
-        <form action="{%url 'login'%}" method="post">
+        {%if error%}<p id="error"><b>{{error}}</b></p> <br>{%endif%}
+        <form action="{%url 'login'%}" method="post" id="smallform">
             {% csrf_token %}
             <div id="formcontent">
                 {{form}}
