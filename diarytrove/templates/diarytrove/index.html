@@ -12,18 +12,19 @@
 <body>
     <header>
         <a href="{%url 'index'%}" id="title"><b> DiaryTrove </b></a>
+        <div id="headerfill"></div>
         <div id="buttonrow">
             {%if logged_in%}
-            <a href="%url 'home'%">{%trans "Home"%}</a>
-            <a href="%url 'logout'%">{%trans "Log out"%}</a>
+            <a href="{%url 'home'%}">{%trans "Home"%}</a>
+            <a href="{%url 'logout'%}">{%trans "Log out"%}</a>
             {%else%}
-            <a href="%url 'login'%">{%trans "Log in"%}</a>
-            <a href="%url 'signup'%">{%trans "Sign up"%}</a>
+            <a href="{%url 'login'%}">{%trans "Log in"%}</a>
+            <a href="{%url 'signup'%}">{%trans "Sign up"%}</a>
             {%endif%}
         </div>
     </header>
     <main>
-        <p id="tagline"><i>{%trans '"Because your memories are your most precious data"'%}</i></p>
+        <p id="tagline"><i><b>{%trans '"Because your memories are your most precious data"'%}</b></i></p>
         <br>
         <h2>{%trans "What is DiaryTrove?"%}</h2>
         <p>{%trans "DiaryTrove is a mix between a personal diary and a time capsule."%}</p>
@@ -34,10 +35,6 @@
         <br><br>
         <h3>{%trans "What are you waiting for? Register right now to start saving your precious memories!"%}</h3>
     </main>
-    <footer>
-        <p id="contact">{%trans "Contact:"%} <a href="mailto:diarytrove.app@gmail.com" target="_blank">diarytrove.app@gmail.com</a></p>
-        <p>{%trans "GPL-3.0 license"%}</p>
-        <a href="https://github.com/ilwan07/DiaryTrove" target="_blank"><img src="{%static 'diarytrove/assets/github_icon.svg'%}" alt="{%trans 'github icon'%}"></a>
-    </footer>
+    {%include "diarytrove/footer.html"%}
 </body>
 </html>

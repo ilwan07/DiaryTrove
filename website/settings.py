@@ -156,7 +156,7 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 SITE_ID = 1
 
 # Some URLs
-LOGIN_URL = 'loginpage'
+LOGIN_URL = 'login'
 
 # SECURITY FEATURES: uncomment these in production
 #SECURE_SSL_REDIRECT = True

@@ -26,10 +26,13 @@ header *:not(div) {
 }
 
 header #title {
-    flex-grow: 1;
     font-size: 2rem;
     text-decoration: none;
     color: black;
+}
+
+header #headerfill {
+    flex-grow: 1;
 }
 
 header #buttonrow a {
@@ -41,7 +44,7 @@ header #buttonrow a {
     text-decoration: none;
     background-color: #10a9eb;
     border: 1.5px solid #0f90c7;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 header #buttonrow a:hover {
@@ -82,6 +85,23 @@ footer #contact {
     flex-grow: 1;
 }
 
+footer #license {
+    color: black;
+}
+
 footer img {
     height: 2rem;
+}
+
+form {
+    font-size: 1.3rem;
+}
+
+form input {
+    font-size: 1.2rem;
+    margin: 0.5rem;
+    padding: 0.2rem;
+    border: 1.5px solid #10a9eb;
+    border-radius: 8px;
+    width: 50vh;
 }
