@@ -93,15 +93,41 @@ footer img {
     height: 2rem;
 }
 
-form {
+#formcontent {
     font-size: 1.3rem;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 1rem;
+    row-gap: 0.6rem;
+    align-items: center;
 }
 
-form input {
+#formcontent > div {
+    display: contents;
+}
+
+#formcontent label {
+    justify-self: left;
+}
+
+#formcontent input {
     font-size: 1.2rem;
-    margin: 0.5rem;
     padding: 0.2rem;
     border: 1.5px solid #10a9eb;
     border-radius: 8px;
-    width: 50vh;
+    width: 35%;
+}
+
+form input[type="submit"] {
+    transition: 0.2s;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: 1.5px solid #10a9eb;
+    border-radius: 8px;
+}
+
+form input[type="submit"]:hover {
+    transition: 0.2s;
+    padding: 0.6rem;
 }

@@ -20,7 +20,9 @@
     <main>
         <form action="{%url 'login'%}" method="post">
             {% csrf_token %}
-            {{form}}
+            <div id="formcontent">
+                {{form}}
+            </div>
             <input type="submit" value="{%trans 'Log in'%}">
         </form>
     </main>
