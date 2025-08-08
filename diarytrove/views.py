@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpRequest, HttpResponse, Http404
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
@@ -32,7 +32,43 @@ def auth_signup(request:HttpRequest):
     if request.method == "POST":
         # Handle the signup data
         form = SignupForm(request.POST)
-        #TODO
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"].lower()  # emails are case insensitive
+            password = form.cleaned_data["password"]
+            password_confirm = form.cleaned_data["password_confirm"]
+
+            # Check username validity and availability
+            if not all(char.isalnum() or char in "._-+" for char in username):
+                error_message = _("Username can only contain letters, numbers, and the following symbols: . _ - +")
+            elif User.objects.filter(username=username).exists():
+                error_message = _("This username is already taked, choose another one or use the log in page if you already created your account.")
+            
+            # Check email availability
+            elif User.objects.filter(email=email).exists():
+                error_message = _("This email address is already in use, use the log in page to log into your account instead.")
+
+            # Check password matching and robustness
+            elif password != password_confirm:
+                error_message = _("The two passwords aren't matching. Make sure to type the same password twice.")
+            else:
+                try:
+                    validate_password(password)
+                except ValidationError as e:
+                    error_message = " ".join(e.messages)
+                
+                else:
+                    # Register the user and log in
+                    user = User.objects.create_user(username, email, password)
+                    profile = Profile(user=user)
+                    profile.save()
+                    login(request, user)
+                    return redirect("home")
+
+        else:
+            # Properly display the error for an invalid form
+            error_message = "".join([error for errors in form.errors.values() for error in errors])
+            form = SignupForm(initial=request.POST)
     
     else:
         # Create the form and give the page
@@ -58,7 +94,7 @@ def auth_login(request:HttpRequest):
 
             login_type = "email" if "@" in username_email else "username"
             if login_type == "email":
-                username_email = username_email.lower()  # emails are case insensitive, so standarize everything to lowercase
+                username_email = username_email.lower()  # emails are case insensitive
             
             # Check the validity of the credentials
             try:
@@ -84,6 +120,11 @@ def auth_login(request:HttpRequest):
                         return redirect(request.POST["next"])
                     else:
                         return redirect("home")
+        
+        else:
+            # Properly display the error for an invalid form
+            error_message = "".join([error for errors in form.errors.values() for error in errors])
+            form = LoginForm(initial=request.POST)
     
     else:
         # Create the form and give the page
