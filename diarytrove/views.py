@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import Profile
-from .forms import LoginForm
+from .forms import LoginForm, SignupForm
 
 import datetime
 
@@ -25,7 +25,20 @@ def auth_signup(request:HttpRequest):
     """
     Page to create a new account, also handles POST data
     """
-    return HttpResponse("NOT IMPLEMENTED")
+    if request.user.is_authenticated:
+        return redirect("home")
+    
+    error_message = None
+    if request.method == "POST":
+        # Handle the signup data
+        form = SignupForm(request.POST)
+        #TODO
+    
+    else:
+        # Create the form and give the page
+        form = SignupForm()
+    
+    return render(request, "diarytrove/signup.html", {"form": form, "error":error_message})
 
 
 def auth_login(request:HttpRequest):
@@ -85,6 +98,20 @@ def auth_logout(request:HttpRequest):
     """
     logout(request)
     return redirect("index")
+
+
+def conditions(request:HttpRequest):
+    """
+    Returns  page with the terms and conditions
+    """
+    return render(request, "diarytrove/conditions.html")
+
+
+def passwords(request:HttpRequest):
+    """
+    Returns a page explaining password security
+    """
+    return render(request, "diarytrove/passwords.html")
 
 
 @login_required

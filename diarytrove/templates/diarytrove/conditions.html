@@ -1,0 +1,42 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DiaryTrove | {%trans "Terms and Conditions"%}</title>
+    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
+</head>
+
+<body>
+    <header>
+        <p id="title"><b><a href="{%url 'index'%}">DiaryTrove</a> | {%trans "Terms and Conditions"%}</b></p>
+        <div id="headerfill"></div>
+        <div id="buttonrow">
+            <a href="{%url 'index'%}">{%trans "Go to index"%}</a>
+        </div>
+    </header>
+
+    <main>
+        <h2>{%trans "By using DiaryTrove, you agree to the following conditions:"%}</h2>
+        <br>
+        <h4>{%trans "Summary of the conditions: This service is provided for free but without any guarantees. You must not use it for illegal activities, you must not upload malicious content on the platform, we reserve the right to take actions on your account if necessary."%}</h4>
+        <br>
+        <ul>
+            <li>{%trans "DiaryTrove is a free service. Therefore, we do not guarantee the availability or the proper functioning of the service at all times."%}</li>
+            <li>{%trans "You must not use DiaryTrove for any illegal activities. Furthermore, you should not upload any malicious content or file to the platform."%}</li>
+            <li>{%trans "We reserve the right to delete any uploaded content or media that violates our terms of service."%}</li>
+            <li>{%trans "You agree to receive email notifications from the platform. You will be able to change the notification settings at any time in your preferences."%}</li>
+            <li>{%trans "We may change these conditions at any time, and your continued use of the service implies acceptance of the new conditions."%}</li>
+            <li>{%trans "We reserve the right to suspend or terminate your account if you violate these conditions, or if deemed necessary, even if you did not directly violate them."%}</li>
+            <li>{%trans "We reserve the right to modify the service, including the features and functionalities, at any time without prior notice."%}</li>
+            <li>{%trans "Again, this service is provided as is, without any warranties or guarantees. We do not guarantee that the service will be uninterrupted or error-free. If you encounter any issues, you can report them to us and we will try to fix them in the extend of our possibilities."%}</li>
+            <li>{%trans "If you do not agree with these conditions, you must stop using the service immediately."%}</li>
+        </ul>
+    </main>
+
+    {%include "diarytrove/footer.html"%}
+</body>
+</html>

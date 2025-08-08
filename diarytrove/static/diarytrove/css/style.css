@@ -7,10 +7,13 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    text-wrap: balance;
     overflow-wrap: break-word;
     font-family: 'Trebuchet MS', sans-serif;
-    background-color: #e2f8ff;
+    background-color: skyblue;
+}
+
+a {
+    color: black;
 }
 
 header {
@@ -27,8 +30,12 @@ header *:not(div) {
 
 header #title {
     font-size: 2rem;
+}
+
+header #title a {
+    margin: 0;
+    padding: 0;
     text-decoration: none;
-    color: black;
 }
 
 header #headerfill {
@@ -40,7 +47,6 @@ header #buttonrow a {
     font-size: 1rem;
     padding: 0.5rem;
     margin-left: 0;
-    color: black;
     text-decoration: none;
     background-color: #10a9eb;
     border: 1.5px solid #0f90c7;
@@ -57,6 +63,7 @@ main {
     padding: 1rem;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
+    background-color: #e2f8ff;
 }
 
 main #tagline {
@@ -85,10 +92,6 @@ footer #contact {
     flex-grow: 1;
 }
 
-footer #license {
-    color: black;
-}
-
 footer img {
     height: 2rem;
 }
@@ -102,7 +105,7 @@ footer img {
     align-items: center;
 }
 
-#smallform #formcontent > div {
+#smallform #formcontent div {
     display: contents;
 }
 
@@ -118,6 +121,27 @@ footer img {
     width: 35%;
 }
 
+form #conditions {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    padding: 0.2rem;
+    margin-top: 1rem;
+    border-radius: 8px;
+}
+
+form #conditions a {
+    margin-right: 0.8rem;
+}
+
+form #conditions input {
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 1.5px solid #10a9eb;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 #smallform input[type="submit"] {
     transition: 0.2s;
     font-size: 1.2rem;
@@ -125,9 +149,15 @@ footer img {
     padding: 0.5rem;
     border: 1.5px solid #10a9eb;
     border-radius: 8px;
+    cursor: pointer;
 }
 
 #smallform input[type="submit"]:hover {
     transition: 0.2s;
     padding: 0.6rem;
+}
+
+#passwordsecurity {
+    font-size: 1.1rem;
+    margin-top: 0.8rem;
 }

@@ -31,7 +31,7 @@ DEBUG = True
 
 WEB_DOMAIN = 'diarytrove.woah.pw'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [WEB_DOMAIN, 'localhost']
 
 
 # Application definition
@@ -151,9 +151,6 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
-
-# Site ID
-SITE_ID = 1
 
 # Some URLs
 LOGIN_URL = 'login'
