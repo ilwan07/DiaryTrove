@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import Profile
-from .forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm, PreferencesForm
 from .tools import regular_jobs
 
 import datetime
@@ -162,10 +162,56 @@ def preferences(request:HttpRequest):
     """
     Change the user preferences
     """
-    pass
+    error_message = None
+    profile:Profile = request.user.profile
+    if request.method == "POST":
+        # Handle the submited preferences
+        form = PreferencesForm(request.POST)
+        if form.is_valid():
+            editable_lock_time = form.cleaned_data["editable_lock_time"]
+            lock_time = form.cleaned_data["lock_time"]
+            mail_reminder = form.cleaned_data["mail_reminder"]
+            mail_memory = form.cleaned_data["mail_memory"]
+            mail_newsletter = form.cleaned_data["mail_newsletter"]
+
+            if profile.editable_lock_time:
+                profile.lock_time = lock_time
+
+            # This cannot be enabled back
+            if not editable_lock_time:
+                profile.editable_lock_time = False
+            
+            try:
+                mail_memory = int(mail_memory)
+            except ValueError:
+                error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
+            else:
+                if not 1 <= mail_memory <= 3:
+                    error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
+                else:
+                    profile.mail_reminder = mail_reminder
+                    profile.mail_newsletter = mail_newsletter
+                    profile.save()
+                    return redirect("home")
+        
+        else:
+            # Properly display the error for an invalid form
+            error_message = "".join([error for errors in form.errors.values() for error in errors])
+            form = PreferencesForm(initial=request.POST)
+    
+    else:
+        # Create the form and give the page
+        form = PreferencesForm()
+        form.fields["editable_lock_time"].initial = profile.editable_lock_time
+        form.fields["lock_time"].initial = profile.lock_time
+        form.fields["mail_reminder"].initial = profile.mail_reminder
+        form.fields["mail_memory"].initial = profile.mail_memory
+        form.fields["mail_newsletter"].initial = profile.mail_newsletter
+    
+    return render(request, "diarytrove/preferences.html", {"form": form, "error":error_message, "editable":profile.editable_lock_time})
 
 
-@login_required
+@login_required(redirect_field_name=None, login_url="index")
 @regular_jobs
 def home(request:HttpRequest):
     """

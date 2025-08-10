@@ -88,7 +88,11 @@ footer *:not(a) {
     margin-right: 1rem;
 }
 
-footer #contact {
+footer #startrow {
+    flex-grow: 0.85;
+}
+
+footer #middlerow {
     flex-grow: 1;
 }
 
@@ -113,12 +117,21 @@ footer img {
     justify-self: left;
 }
 
-#smallform #formcontent input {
+#smallform #formcontent input:not([type="checkbox"]) {
     font-size: 1.2rem;
     padding: 0.2rem;
     border: 1.5px solid #10a9eb;
     border-radius: 8px;
     width: 35%;
+}
+
+#smallform #formcontent select {
+    font-size: 1.2rem;
+    padding: 0.2rem;
+    border: 1.5px solid #10a9eb;
+    border-radius: 8px;
+    width: 36%;
+    cursor: pointer;
 }
 
 form #conditions {
@@ -134,7 +147,7 @@ form #conditions a {
     margin-right: 0.8rem;
 }
 
-form #conditions input {
+input[type="checkbox"] {
     width: 1.4rem;
     height: 1.4rem;
     border: 1.5px solid #10a9eb;

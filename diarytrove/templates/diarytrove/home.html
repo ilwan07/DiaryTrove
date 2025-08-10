@@ -12,11 +12,11 @@
 
 <body>
     <header>
-        <p id="title"><b><a href="{%url 'index'%}">DiaryTrove</a> | {%blocktrans with username=user.username%}{{username}}'s Home Page{%endblocktrans%}</b></p>
+        <p id="title"><b>DiaryTrove | {%blocktrans with username=user.username%}{{username}}'s Home Page{%endblocktrans%}</b></p>
         <div id="headerfill"></div>
         <div id="buttonrow">
             <a href="{%url 'preferences'%}">{%trans "Preferences"%}</a>
-            <a href="{%url 'index'%}">{%trans "Index page"%}</a>
+            {%if user.is_staff%}<a href="{% url 'admin:index' %}" target="_blank">{%trans "Admin access"%}</a>{%endif%}
             <a href="{%url 'logout'%}">{%trans "Log out"%}</a>
         </div>
     </header>

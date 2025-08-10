@@ -1,4 +1,4 @@
-# DIARYTROVE FRENCH TRANSLATIONS.
+# DIARYTROVE FRENCH JS TRANSLATIONS.
 # Copyright (C) 2025 MILOUDI ILWÂN
 # This file is distributed under the same license as the DIARYTROVE package.
 # FIRST AUTHOR miloudilwan@gmail.com, 2025.
@@ -17,4 +17,3 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-msgstr ""

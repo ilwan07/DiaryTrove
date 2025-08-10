@@ -12,9 +12,10 @@
 
 <body>
     <header>
-        <p id="title"><b><a href="{%url 'index'%}">DiaryTrove</a> | {%trans "Sign up"%}</b></p>
+        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Sign up"%}</b></p>
         <div id="headerfill"></div>
         <div id="buttonrow">
+            <a href="{%url 'login'%}">{%trans "Log in"%}</a>
             <a href="{%url 'index'%}">{%trans "Back to index"%}</a>
         </div>
     </header>
@@ -37,5 +38,6 @@
     </main>
 
     {%include "diarytrove/footer.html"%}
+    <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
 </body>
 </html>
