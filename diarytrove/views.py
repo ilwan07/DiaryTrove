@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 
 from .models import Profile
 from .forms import LoginForm, SignupForm
+from .tools import regular_jobs
 
 import datetime
 
@@ -63,7 +64,7 @@ def auth_signup(request:HttpRequest):
                     profile = Profile(user=user)
                     profile.save()
                     login(request, user)
-                    return redirect("home")
+                    return redirect("preferences")
 
         else:
             # Properly display the error for an invalid form
@@ -156,8 +157,20 @@ def passwords(request:HttpRequest):
 
 
 @login_required
+@regular_jobs
+def preferences(request:HttpRequest):
+    """
+    Change the user preferences
+    """
+    pass
+
+
+@login_required
+@regular_jobs
 def home(request:HttpRequest):
     """
     The user's home page
     """
-    return HttpResponse("NOT IMPLEMENTED")
+    user = request.user
+
+    return render(request, "diarytrove/home.html", {"user": user})

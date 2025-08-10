@@ -12,3 +12,7 @@ class SignupForm(forms.Form):
     email = forms.EmailField(label=_("Email address"), min_length=4, max_length=320)
     password = forms.CharField(label=_("Password"), min_length=8, widget=forms.PasswordInput)
     password_confirm = forms.CharField(label=_("Confirm password"), min_length=8, widget=forms.PasswordInput)
+
+
+class PreferencesForm(forms.Form):
+    pass
