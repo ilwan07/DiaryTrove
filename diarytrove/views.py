@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from .models import Profile
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .utils import regular_jobs
+from .utils import regular_jobs, safe_join
 
 import datetime
 
@@ -211,7 +211,7 @@ def preferences(request:HttpRequest):
     return render(request, "diarytrove/preferences.html", {"form": form, "error":error_message, "editable":profile.editable_lock_time})
 
 
-@login_required(redirect_field_name=None, login_url="index")
+@login_required(redirect_field_name=None, login_url="index")  # Simply redirect to the index if the user is not logged in
 @regular_jobs
 def home(request:HttpRequest):
     """

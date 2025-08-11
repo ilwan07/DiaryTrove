@@ -2,6 +2,8 @@ from django.http import HttpRequest
 
 from . import jobs
 
+from pathlib import Path
+
 
 def regular_jobs(func):
     """
@@ -16,3 +18,13 @@ def regular_jobs(func):
         return func(*args, **kwargs)
     
     return wrapper
+
+
+def safe_join(root:Path, *paths):
+    """
+    Join paths while protecting against directory transversal attacks
+    """
+    final = root.joinpath(*paths).resolve()
+    if not str(final).startswith(str(root.resolve())):
+        raise ValueError("Attempted directory traversal")
+    return final

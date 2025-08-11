@@ -29,7 +29,7 @@ def jobs():
     """
     Background job scheduler that runs scheduled tasks in threads
     """
-    schedule.every(1).day.do(cleanup_private_media)
+    schedule.every(1).days.do(cleanup_private_media)
 
     while True:
         try:

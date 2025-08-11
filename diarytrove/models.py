@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from .storage import PrivateMediaStorage
 
@@ -38,12 +37,12 @@ class Memory(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Owner of the memory"))
     date = models.DateTimeField(_("Date of creation"))
     lock_time = models.IntegerField(_("Memory lock time in days"))  # Use 0 for the user preference
-    title = models.TextField(_("Memory title"))
+    title = models.CharField(_("Memory title"), max_length=255)
     content = models.TextField(_("Content of the memory"))
     mood = models.IntegerField(_("Mood for the memory"), choices=MOODS)
 
     def __str__(self):
-        return str(self.title)
+        return f"{str(self.title)} ({self.pk})"
 
 
 class MemoryMedia(models.Model):
