@@ -135,7 +135,13 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = '/var/www/diarytrove/static'
+STATIC_ROOT = Path('/var/www/diarytrove/static')
+
+# Private media files, those can only be accessed internally after permission checks
+# FOR PRODUCTION: use an adapted path, like the commented one
+
+#PRIVATE_MEDIA_ROOT = Path('/var/www/diarytrove/private_media')
+PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -143,6 +149,7 @@ STATIC_ROOT = '/var/www/diarytrove/static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email configuration
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -153,9 +160,11 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 # Some URLs
+
 LOGIN_URL = 'login'
 
 # SECURITY FEATURES: uncomment these in production
+
 #SECURE_SSL_REDIRECT = True
 #SECURE_HSTS_SECONDS = 31536000  # 1 year
 #SECURE_HSTS_INCLUDE_SUBDOMAINS = True

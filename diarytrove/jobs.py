@@ -1,8 +1,12 @@
 from django.contrib.auth.models import User
+from django.apps import apps
+from django.conf import settings
+from django.db.models import FileField, ImageField
 
 from .models import Profile
 
 from threading import Thread
+from pathlib import Path
 import os
 import time
 import schedule
@@ -25,7 +29,7 @@ def jobs():
     """
     Background job scheduler that runs scheduled tasks in threads
     """
-    schedule.every(1).minutes.do(check_profiles)
+    schedule.every(1).day.do(cleanup_private_media)
 
     while True:
         try:
@@ -39,6 +43,7 @@ def jobs():
 def check_profiles(user:User=None):
     """
     Make sure that each user has a profile
+    Only triggers manually to avoid perofrmance issues
     """
     if user is not None:
         affected_users = [user]
@@ -49,3 +54,88 @@ def check_profiles(user:User=None):
         if not hasattr(affected_user, "profile"):
             profile = Profile(user=affected_user)
             profile.save()
+
+
+def cleanup_private_media():
+    """
+    Deletes unreferences private media files
+    """
+    grace_seconds = 86400  # One day
+
+    try:
+        private_root = Path(settings.PRIVATE_MEDIA_ROOT)
+    except Exception:
+       print("PRIVATE_MEDIA_ROOT not configured, skipping cleanup.")
+       return
+
+    if not private_root.exists():
+        print(f"Private media root {private_root} does not exist, skipping cleanup.")
+        return
+
+    # Get each referenced media
+    referenced = []
+    representative_storage = None
+
+    for model in apps.get_models():
+        for field in model._meta.get_fields():
+            if isinstance(field, (FileField, ImageField)):
+                # Ensure we will use the correct storage implementation later
+                if representative_storage is None:
+                    representative_storage = getattr(field, "storage", None)
+
+                # Collect referenced names from database efficiently
+                qs = model.objects.exclude(**{f"{field.name}__isnull": True}).exclude(**{f"{field.name}": ""}).values_list(field.name, flat=True)
+                for name in qs:
+                    if not name:
+                        continue
+                    # Normalize to forward slashes for comparison with Path.as_posix()
+                    referenced.append(str(name).lstrip("/"))
+
+    # If we didn't discover a storage object, try to create a filesystem storage pointing to the root
+    if representative_storage is None:
+        try:
+            from django.core.files.storage import FileSystemStorage
+            representative_storage = FileSystemStorage(location=str(private_root))
+        except Exception:
+            representative_storage = None
+
+    # Iterate files on disk and delete orphans older than a day
+    now = time.time()
+    for p in private_root.rglob("*"):
+        if not p.is_file():
+            continue
+        try:
+            rel = p.relative_to(private_root).as_posix()
+        except Exception:
+            # Can't relativize, skip for safety
+            continue
+
+        if rel in referenced:
+            continue  # Still referenced in database
+
+        # Check age to avoid deleting files that may be in-progress
+        try:
+            mtime = p.stat().st_mtime
+        except Exception:
+            # If we cannot read stat, skip
+            print(f"Could not stat file {p}, skipping.")
+            continue
+
+        age = now - mtime
+        if age < grace_seconds:
+            continue  # Keep files which are too recent
+
+        # Attempt deletion via storage API if available, else unlink
+        try:
+            if representative_storage is not None:
+                if representative_storage.exists(rel):
+                    representative_storage.delete(rel)
+                else:
+                    # Fallback to unlink if file exists
+                    if p.exists():
+                        p.unlink()
+            else:
+                # No storage object, use unlink
+                p.unlink()
+        except Exception:
+            print(f"Failed to delete orphaned private media {p}")

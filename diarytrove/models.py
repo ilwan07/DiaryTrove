@@ -1,14 +1,17 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.contrib import admin
 from django.contrib.auth.models import User
 from django.conf import settings
+
+from .storage import PrivateMediaStorage
+
+# Creating the private media storage object
+private_storage = PrivateMediaStorage()
 
 
 class Profile(models.Model):
     """
-    a model to store a user profile, with all its settings, data and preferences
+    Stores a user profile, with all its settings, data and preferences
     """
     EMAIL_MEMORIES = [(1, _("Always send")), (2, _("Only positive memories")), (3, _("Never send"))]
 
@@ -21,3 +24,31 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(_("%(user)s's profile") % {"user": self.user})
+
+
+class Memory(models.Model):
+    """
+    Represents a memory entry and its attributes
+    """
+    class Meta:
+        verbose_name_plural = "memories"
+    
+    MOODS = [(1, "😀"), (2, "🙂"), (3, "😊"), (4, "🤩"), (5, "😜"), (6, "😐"), (7, "😒"), (8, "😮‍💨"), (9, "😔"), (10, "🤕"), (11, "🙁"), (12, "😢")]
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Owner of the memory"))
+    date = models.DateTimeField(_("Date of creation"))
+    lock_time = models.IntegerField(_("Memory lock time in days"))  # Use 0 for the user preference
+    title = models.TextField(_("Memory title"))
+    content = models.TextField(_("Content of the memory"))
+    mood = models.IntegerField(_("Mood for the memory"), choices=MOODS)
+
+    def __str__(self):
+        return str(self.title)
+
+
+class MemoryMedia(models.Model):
+    """
+    Represents a private media uploaded by the user for a memory
+    """
+    memory = models.ForeignKey(Memory, on_delete=models.CASCADE,  verbose_name=_("Memory of origin"))
+    file = models.FileField(storage=private_storage, upload_to="memory_media")

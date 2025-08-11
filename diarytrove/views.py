@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from .models import Profile
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .tools import regular_jobs
+from .utils import regular_jobs
 
 import datetime
 
