@@ -36,8 +36,24 @@
                 </div>
                 <br>
                 <div>
-                    <label>{%trans "Lock time in days"%}<br>
-                        <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}}>
+                    <p>{%trans "Select your current mood:"%}</p>
+                    <div id="moodsdiv">z
+                        {%for mood in moods%}
+                        <input type="radio" name="mood" value={{forloop.counter}} id="mood{{forloop.counter}}"
+                               style="display: none" {%if forloop.counter == 1%}checked{%endif%}>
+                        <label for="mood{{forloop.counter}}">{{mood}}</label>
+                        {%endfor%}
+                    </div>
+                </div>
+                <br>
+                <div id="checkboxdiv">
+                    <label for="default_lock_time">{%trans "Use default lock time:"%}</label>
+                    <input type="checkbox" name="default_lock_time" id="default_lock_time" checked>
+                </div>
+                <div id="locktimediv">
+                    <br>
+                    <label>{%trans "Lock time in days:"%}<br>
+                        <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}} min=1>
                     </label>
                 </div>
                 <br>
@@ -48,8 +64,10 @@
                 </div>
                 <ul id="file-list"></ul>
             </div>
+            <br>
             <input type="submit" value="{%trans 'Create memory'%}">
         </form>
+        <br id="errorbr" style="display: none"><p id="error" style="display: none"><b id="errorbold"></b></p>
     </main>
 
     {%include "diarytrove/footer.html"%}

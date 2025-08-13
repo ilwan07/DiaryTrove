@@ -1,5 +1,6 @@
 * {
     margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
 }
 
 body {
@@ -8,8 +9,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     overflow-wrap: break-word;
-    font-family: 'Trebuchet MS', sans-serif;
-    background-color: skyblue;
+    background-color: #e2f8ff;
 }
 
 a {
@@ -225,4 +225,39 @@ form input[type="submit"]:hover {
 #buttonlinks a:hover {
     transition: 0.2s;
     padding: 0.8rem;
+}
+
+#checkboxdiv {
+    display: flex;
+    align-items: center;
+}
+
+#checkboxdiv label {
+    padding-right: 0.7rem;
+}
+
+#moodsdiv {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 0;
+}
+
+#moodsdiv label {
+    flex-grow: 1;
+    padding: 0.4rem;
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+#moodsdiv input[type="radio"]:checked + label {
+    background-color: skyblue !important;
+    border: 3px solid #10a9eb !important;
+    border-radius: 100%;
+}
+
+#moodsdiv label:hover {
+    background-color: #aee3ff;
+    border-radius: 100%;
 }

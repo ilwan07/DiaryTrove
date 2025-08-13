@@ -1,4 +1,24 @@
-(function () {
+const checkbox_input = document.querySelector("#checkboxdiv input");
+const locktime_div = document.getElementById("locktimediv");
+const locktime_input = document.querySelector("#locktimediv input");
+
+function checkbox_update() {
+    if (checkbox_input.checked) {
+        locktime_div.style.display = "none";
+        locktime_input.setAttribute("min", 0);
+        locktime_input.value = 0; // Set to 0 if default lock time is used
+    } else {
+        locktime_div.style.display = "";
+        locktime_input.setAttribute("min", 1);
+        locktime_input.value = 365;
+    }
+}
+
+checkbox_update();
+checkbox_input.addEventListener("change", checkbox_update);
+
+
+(function () {  // Handle the media upload and submit process
 // Keep selected files in an array so we can add or remove before submit
 var selectedFiles = [];
 const fileInput = document.getElementById("file-input");
@@ -6,6 +26,9 @@ const addBtn = document.getElementById("add-files-btn");
 const fileList = document.getElementById("file-list");
 const selectedCount = document.getElementById("selected-count");
 const form = document.getElementById("upload-form");
+const error = document.getElementById("error");
+const errorbold = document.getElementById("errorbold");
+const errorbr = document.getElementById("errorbr");
 
 function uid() {
     // Generate a random uid, very collision unlikely
@@ -95,7 +118,9 @@ form.addEventListener("submit", (ev) => {
     }).then(async response => {
         if (!response.ok) {
             const text = await response.json().catch(()=>gettext("(no body)"));
-            alert(gettext("Upload failed: ") + response.status + " - " + text.error);
+            errorbold.textContent = gettext("Upload failed: ") + text.error;
+            error.style.display = "";
+            errorbr.style.display = "";
             return;
         }
         const data = await response.json().catch(()=>null);
@@ -106,7 +131,9 @@ form.addEventListener("submit", (ev) => {
             window.location.reload();
         }
     }).catch(err => {
-        alert(gettext("Upload error: ") + err.message);
+        errorbold.textContent = gettext("Upload error: ") + err.message;
+        error.style.display = "";
+        errorbr.style.display = "";
     });
 });
 

@@ -147,14 +147,14 @@ def conditions(request:HttpRequest):
     """
     Returns  page with the terms and conditions
     """
-    return render(request, "diarytrove/conditions.html")
+    return render(request, "diarytrove/conditions.html", {"user": request.user})
 
 
 def passwords(request:HttpRequest):
     """
     Returns a page explaining password security
     """
-    return render(request, "diarytrove/passwords.html")
+    return render(request, "diarytrove/passwords.html", {"user": request.user})
 
 
 @login_required
@@ -187,7 +187,7 @@ def preferences(request:HttpRequest):
             except ValueError:
                 error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
             else:
-                if not 1 <= mail_memory <= 3:
+                if not Profile.EMAIL_MEMORIES[0][0] <= mail_memory <= Profile.EMAIL_MEMORIES[-1][0]:
                     error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
                 else:
                     profile.mail_reminder = mail_reminder
@@ -232,9 +232,31 @@ def memory_create(request:HttpRequest):
         # Handle posted data
         if not all([elem in request.POST and request.POST.get(elem, "") != "" for elem in ("title", "content", "mood", "lock_time")]):
             return JsonResponse({"success": False, "error": _("Some required fields are missing.")}, status=400)
-
-        # TODO: validate the data and create Memory object
-        memory = Memory(owner=request.user, date=timezone.now(),lock_time=365, title="dummy", content="dummy", mood=1)  # TODO: replace with actual implementation
+        
+        title = request.POST["title"]
+        content = request.POST["content"]
+        lock_time = request.POST["lock_time"]
+        mood = request.POST["mood"]
+        
+        # Validate the data
+        if not title or not content:
+            return JsonResponse({"success": False, "error": _("Title and content cannot be empty.")}, status=400)
+        try:
+            lock_time = int(lock_time)
+        except ValueError:
+            return JsonResponse({"success": False, "error": _("Lock time must be a valid integer.")}, status=400)
+        if lock_time < 0:
+            return JsonResponse({"success": False, "error": _("Lock time cannot be negative.")}, status=400)
+        try:
+            mood = int(mood)
+        except ValueError:
+            return JsonResponse({"success": False, "error": _("Please select a valid mood.")}, status=400)
+        if not Memory.MOODS[0][0] <= mood <= Memory.MOODS[-1][0]:
+            return JsonResponse({"success": False, "error": _("Please select a valid mood.")}, status=400)
+        
+        # Create the memory object
+        memory = Memory(owner=request.user, date=timezone.now(), lock_time=lock_time,
+                        title=title, content=content, mood=mood)
         memory.save()
 
         files = request.FILES.getlist("files[]")
@@ -247,7 +269,8 @@ def memory_create(request:HttpRequest):
         return redirect("memory_view", memory.pk)
 
     # Give the page for GET requests
-    return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile})
+    return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,
+                                                             "moods": [mood[1] for mood in Memory.MOODS]})
 
 
 def memory_view(request:HttpRequest, memory_pk:int):

@@ -15,7 +15,11 @@
         <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Terms and Conditions"%}</b></p>
         <div id="headerfill"></div>
         <div id="buttonrow">
+            {%if user.is_authenticated%}
+            <a href="{%url 'home'%}">{%trans "Home"%}</a>
+            {%else%}
             <a href="{%url 'index'%}">{%trans "Go to index"%}</a>
+            {%endif%}
         </div>
     </header>
 
