@@ -1,8 +1,8 @@
-var editable_lock_time_input = document.getElementById("id_editable_lock_time");
-var editable_lock_time_div = editable_lock_time_input.parentElement;
-var lock_time_input = document.getElementById("id_lock_time");
-var editable = document.getElementById("editable").value;
-var form = document.querySelector("form");
+const editable_lock_time_input = document.getElementById("id_editable_lock_time");
+const editable_lock_time_div = editable_lock_time_input.parentElement;
+const lock_time_input = document.getElementById("id_lock_time");
+const editable = document.getElementById("editable").value;
+const form = document.querySelector("form");
 
 editable_lock_time_input.setAttribute("onchange", "editable()");
 

@@ -1,0 +1,60 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DiaryTrove | {%trans "Create Memory"%}</title>
+    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
+</head>
+
+<body>
+    <header>
+        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Create Memory"%}</b></p>
+        <div id="headerfill"></div>
+        <div id="buttonrow">
+            <a href="{%url 'home'%}">{%trans "Home"%}</a>
+        </div>
+    </header>
+
+    <main>
+        <form id="upload-form" method="post" action="{%url 'memory_create'%}">
+            {% csrf_token %}
+            <div id="formcontent">
+                <div>
+                    <label>{%trans "Memory title:"%}<br>
+                    <input type="text" name="title" id="title" required>
+                    </label>
+                </div>
+                <br>
+                <div>
+                    <label>{%trans "Memory content:"%}<br>
+                    <textarea name="content" id="content" rows="6" required></textarea>
+                    </label>
+                </div>
+                <br>
+                <div>
+                    <label>{%trans "Lock time in days"%}<br>
+                        <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}}>
+                    </label>
+                </div>
+                <br>
+                <input id="file-input" type="file" style="display:none" multiple>
+                <div>
+                    <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
+                    <span id="selected-count">{%trans "No files selected"%}</span>
+                </div>
+                <ul id="file-list"></ul>
+            </div>
+            <input type="submit" value="{%trans 'Create memory'%}">
+        </form>
+    </main>
+
+    {%include "diarytrove/footer.html"%}
+    <script src="{% url 'javascript-catalog' %}"></script>
+    <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+    <script src="{% static 'diarytrove/js/memory_create.js' %}"></script>
+</body>
+</html>

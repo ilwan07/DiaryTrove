@@ -12,7 +12,7 @@
 
 <body>
     <header>
-        <p id="title"><b>DiaryTrove | {%blocktrans with username=user.username%}{{username}}'s Home Page{%endblocktrans%}</b></p>
+        <p id="title"><b>DiaryTrove | {%trans "Home"%}</b></p>
         <div id="headerfill"></div>
         <div id="buttonrow">
             <a href="{%url 'preferences'%}">{%trans "Preferences"%}</a>
@@ -22,7 +22,9 @@
     </header>
 
     <main>
-        
+        <div id="buttonlinks">
+            <a href="{%url 'memory_create'%}"><b>{%trans "Create new memory"%}</b></a>
+        </div>
     </main>
 
     {%include "diarytrove/footer.html"%}

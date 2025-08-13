@@ -163,6 +163,11 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 LOGIN_URL = 'login'
 
+# Variables you can adjust to modify app settings
+
+MAX_TOTAL_MEDIA_SIZE = 10 * 2**30  # Max total medias size on disk, disable media uploads after, 10 Gib
+MAX_MEMORY_MEDIA_SIZE = 10 * 2**20  # Max medias upload size in bytes for one memory, 10 MiB
+
 # SECURITY FEATURES: uncomment these in production
 
 #SECURE_SSL_REDIRECT = True

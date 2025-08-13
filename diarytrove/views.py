@@ -1,14 +1,15 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import HttpRequest, HttpResponse, Http404
+from django.http import HttpRequest, HttpResponse, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from .models import Profile
+from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
 from .utils import regular_jobs, safe_join
 
@@ -220,3 +221,37 @@ def home(request:HttpRequest):
     user = request.user
 
     return render(request, "diarytrove/home.html", {"user": user})
+
+
+@login_required
+def memory_create(request:HttpRequest):
+    """
+    View to create a new memory
+    """
+    if request.method == "POST":
+        # Handle posted data
+        if not all([elem in request.POST and request.POST.get(elem, "") != "" for elem in ("title", "content", "mood", "lock_time")]):
+            return JsonResponse({"success": False, "error": _("Some required fields are missing.")}, status=400)
+
+        # TODO: validate the data and create Memory object
+        memory = Memory(owner=request.user, date=timezone.now(),lock_time=365, title="dummy", content="dummy", mood=1)  # TODO: replace with actual implementation
+        memory.save()
+
+        files = request.FILES.getlist("files[]")
+        for f in files:
+            MemoryMedia.objects.create(memory=memory, file=f)
+
+        # Return json for AJAX requests or redirect for normal requests
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"success": True, "redirect": reverse("memory_view", args=[memory.pk])})
+        return redirect("memory_view", memory.pk)
+
+    # Give the page for GET requests
+    return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile})
+
+
+def memory_view(request:HttpRequest, memory_pk:int):
+    """
+    View to display a memory
+    """
+    return HttpResponse("NOT IMPLEMENTED")  #TODO

@@ -11,4 +11,6 @@ urlpatterns = [
     path("passwords/", views.passwords, name="passwords"),
     path("preferences/", views.preferences, name="preferences"),
     path("home/", views.home, name="home"),
+    path("memory/create", views.memory_create, name="memory_create"),
+    path("memory/<int:memory_pk>/", views.memory_view, name="memory_view"),
 ]

@@ -1,10 +1,11 @@
-var form = document.querySelector("form");
+const form = document.querySelector("form");
+const inputs = form.querySelectorAll("input:not([type='submit']):not([type='hidden'])");
 var modified = false;
-var inputs = form.querySelectorAll("input:not([type='submit']):not([type='hidden'])");
 
 // Make each input trigger the modify function on change
 inputs.forEach(function(input) {
-    input.setAttribute("onchange", "modify()");
+    let oldattr = input.getAttribute("onchange");
+    input.setAttribute("onchange", "modify(); " + (oldattr ? oldattr : ""));
 });
 
 function modify() {
