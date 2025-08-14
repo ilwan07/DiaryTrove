@@ -12,14 +12,21 @@ function modify() {
     modified = true;
 }
 
-// Disable the exit warning if the form is valid
+// When submitting the form, clear the modified flag and then restore it if the form stays
 if (form) {
     form.addEventListener("submit", function(e) {
+        var wasModified = modified;
         modified = false;
+        setTimeout(function() {
+            // If the form is still in the document and had modifications then restore the flag
+            if (document.contains(form) && wasModified) {
+                modified = true;
+            }
+        }, 0);
     });
 }
 
-// Warn the user before leaving the page if he started filling some data
+// Warn the user before leaving the page if unsaved data exists
 window.addEventListener("beforeunload", function(e) {
     if (modified) {
         e.preventDefault();

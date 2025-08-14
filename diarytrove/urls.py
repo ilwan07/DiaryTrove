@@ -9,6 +9,7 @@ urlpatterns = [
     path("logout/", views.auth_logout, name="logout"),
     path("conditions/", views.conditions, name="conditions"),
     path("passwords/", views.passwords, name="passwords"),
+    path("sendmail/", views.contact_email, name="contact_email"),
     path("preferences/", views.preferences, name="preferences"),
     path("home/", views.home, name="home"),
     path("memory/create", views.memory_create, name="memory_create"),

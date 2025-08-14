@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpRequest, HttpResponse, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -12,8 +13,6 @@ from django.utils.translation import gettext as _
 from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
 from .utils import regular_jobs, safe_join
-
-import datetime
 
 
 def index(request:HttpRequest):
@@ -157,6 +156,13 @@ def passwords(request:HttpRequest):
     return render(request, "diarytrove/passwords.html", {"user": request.user})
 
 
+def contact_email(request:HttpRequest):
+    """
+    Redirects to a link to send an email
+    """
+    return HttpResponse(f"<script>window.location.href = 'mailto:{settings.CONTACT_EMAIL}';</script>")
+
+
 @login_required
 @regular_jobs
 def preferences(request:HttpRequest):
@@ -230,6 +236,8 @@ def memory_create(request:HttpRequest):
     View to create a new memory
     """
     profile:Profile = request.user.profile
+    limit_mib = round(settings.MAX_SUBMIT_MEDIA_SIZE / 2**20, 3)
+
     if request.method == "POST":
         # Handle posted data
         if not all([elem in request.POST and request.POST.get(elem, "") != "" for elem in ("title", "content", "mood", "lock_time")]):
@@ -259,12 +267,29 @@ def memory_create(request:HttpRequest):
         if not Memory.MOODS[0][0] <= mood <= Memory.MOODS[-1][0]:
             return JsonResponse({"success": False, "error": _("Please select a valid mood.")}, status=400)
         
+        # Validate uploaded files
+        files = request.FILES.getlist("files[]")
+        total_size = 0  # Files size in bytes
+
+        for f in files:
+            try:
+                total_size += f.size
+            except Exception:
+                return JsonResponse({"success": False, "error": _("Unable to calculat file size.")}, status=400)
+
+        if total_size > settings.MAX_SUBMIT_MEDIA_SIZE:
+            # The uploaded files are too large
+            total_size_mib = round(total_size / 2**20, 3)
+            return JsonResponse({"success": False,
+                                 "error": _("The uploaded files are too large. The maximum is %(limit)s MiB total, you uploaded %(size)s Mib.") % {"limit": limit_mib, "size": total_size_mib}},
+                                status=400)
+
         # Create the memory object
+        raise Http404()
         memory = Memory(owner=request.user, date=timezone.now(), lock_time=lock_time,
                         title=title, content=content, mood=mood)
         memory.save()
 
-        files = request.FILES.getlist("files[]")
         for f in files:
             MemoryMedia.objects.create(memory=memory, file=f)
 
@@ -275,7 +300,9 @@ def memory_create(request:HttpRequest):
 
     # Give the page for GET requests
     return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,
-                                                             "moods": [mood[1] for mood in Memory.MOODS]})
+                                                             "moods": [mood[1] for mood in Memory.MOODS],
+                                                             "max_upload_bytes": settings.MAX_SUBMIT_MEDIA_SIZE,
+                                                             "max_upload_mib": limit_mib})
 
 
 @login_required

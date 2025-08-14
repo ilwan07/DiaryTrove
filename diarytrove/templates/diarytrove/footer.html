@@ -2,7 +2,7 @@
 {% load i18n %}
 
 <footer>
-    <p id="startrow">{%trans "Contact:"%} <a href="mailto:diarytrove.app@gmail.com" target="_blank">diarytrove.app@gmail.com</a></p>
+    <p id="startrow">{%trans "Contact:"%} <a href="{%url 'contact_email'%}" target="_blank">{{CONTACT_EMAIL}}</a></p>
     <p><a href="{%url 'conditions'%}">{%trans "Terms and Conditions"%}</a></p>
     <p id="middlerow"><a href="{%url 'passwords'%}">{%trans "Password Security"%}</a></p>
     <p><a href="{%trans 'https://www.gnu.org/licenses/gpl-3.0.html'%}" target="_blank" id="license">{%trans "GPL-3.0 license"%}</a></p>

@@ -40,7 +40,7 @@
                     <div id="moodsdiv">
                         {%for mood in moods%}
                         <input type="radio" name="mood" value={{forloop.counter}} id="mood{{forloop.counter}}"
-                               style="display: none" {%if forloop.counter == 1%}checked{%endif%}>
+                               style="display:none" {%if forloop.counter == 1%}checked{%endif%}>
                         <label for="mood{{forloop.counter}}">{{mood}}</label>
                         {%endfor%}
                     </div>
@@ -58,17 +58,24 @@
                     </label>
                 </div>
                 <br>
+
                 <input id="file-input" type="file" style="display:none" multiple>
                 <div>
                     <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
                     <span id="selected-count">{%trans "No files selected"%}</span>
+                    <br><small>{%trans "Max total upload:"%} {{max_upload_mib}} {%trans "MiB"%}</small>
+                    <span id="max-bytes" style="display:none">{{max_upload_bytes}}</span>
                 </div>
                 <ul id="file-list"></ul>
+                <div id="progress-wrap" style="display:none">
+                    <progress id="upload-progress" max=100 value=0></progress>
+                    <p id="progress-text">0%</p>
+                </div>
             </div>
             <br>
-            <input type="submit" value="{%trans 'Create memory'%}">
+            <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
         </form>
-        <br id="errorbr" style="display: none"><p id="error" style="display: none"><b id="errorbold"></b></p>
+        <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
     </main>
 
     {%include "diarytrove/footer.html"%}

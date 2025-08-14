@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'diarytrove.context_processors.contact_email',
             ],
         },
     },
@@ -158,6 +159,7 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+CONTACT_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 # Some URLs
 
@@ -165,8 +167,8 @@ LOGIN_URL = 'login'
 
 # Variables you can adjust to modify app settings
 
-MAX_TOTAL_MEDIA_SIZE = 10 * 2**30  # Max total medias size on disk, disable media uploads after, 10 Gib
-MAX_MEMORY_MEDIA_SIZE = 10 * 2**20  # Max medias upload size in bytes for one memory, 10 MiB
+MAX_GLOBAL_MEDIA_SIZE = 10 * 2**30  # Max total medias size on disk, disable media uploads after, 10 Gib
+MAX_SUBMIT_MEDIA_SIZE = 10 * 2**20  # Max medias upload size in bytes for one memory, 10 MiB
 
 # SECURITY FEATURES: uncomment these in production
 
