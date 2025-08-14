@@ -224,10 +224,12 @@ def home(request:HttpRequest):
 
 
 @login_required
+@regular_jobs
 def memory_create(request:HttpRequest):
     """
     View to create a new memory
     """
+    profile:Profile = request.user.profile
     if request.method == "POST":
         # Handle posted data
         if not all([elem in request.POST and request.POST.get(elem, "") != "" for elem in ("title", "content", "mood", "lock_time")]):
@@ -241,12 +243,15 @@ def memory_create(request:HttpRequest):
         # Validate the data
         if not title or not content:
             return JsonResponse({"success": False, "error": _("Title and content cannot be empty.")}, status=400)
-        try:
-            lock_time = int(lock_time)
-        except ValueError:
-            return JsonResponse({"success": False, "error": _("Lock time must be a valid integer.")}, status=400)
-        if lock_time < 0:
-            return JsonResponse({"success": False, "error": _("Lock time cannot be negative.")}, status=400)
+        if not profile.editable_lock_time:
+            lock_time = 0  # Don't allow lock time modification if it's specified in the preferences
+        else:
+            try:
+                lock_time = int(lock_time)
+            except ValueError:
+                return JsonResponse({"success": False, "error": _("Lock time must be a valid integer.")}, status=400)
+            if lock_time < 0:
+                return JsonResponse({"success": False, "error": _("Lock time cannot be negative.")}, status=400)
         try:
             mood = int(mood)
         except ValueError:
@@ -266,13 +271,15 @@ def memory_create(request:HttpRequest):
         # Return json for AJAX requests or redirect for normal requests
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"success": True, "redirect": reverse("memory_view", args=[memory.pk])})
-        return redirect("memory_view", memory.pk)
+        return redirect("memory_view", memory.pk, {"profile": profile})
 
     # Give the page for GET requests
     return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,
                                                              "moods": [mood[1] for mood in Memory.MOODS]})
 
 
+@login_required
+@regular_jobs
 def memory_view(request:HttpRequest, memory_pk:int):
     """
     View to display a memory

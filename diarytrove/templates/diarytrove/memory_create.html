@@ -37,7 +37,7 @@
                 <br>
                 <div>
                     <p>{%trans "Select your current mood:"%}</p>
-                    <div id="moodsdiv">z
+                    <div id="moodsdiv">
                         {%for mood in moods%}
                         <input type="radio" name="mood" value={{forloop.counter}} id="mood{{forloop.counter}}"
                                style="display: none" {%if forloop.counter == 1%}checked{%endif%}>
@@ -48,7 +48,8 @@
                 <br>
                 <div id="checkboxdiv">
                     <label for="default_lock_time">{%trans "Use default lock time:"%}</label>
-                    <input type="checkbox" name="default_lock_time" id="default_lock_time" checked>
+                    <input type="checkbox" name="default_lock_time" id="default_lock_time" checked
+                           {%if not profile.editable_lock_time%}disabled style="cursor: initial"{%endif%}>
                 </div>
                 <div id="locktimediv">
                     <br>
