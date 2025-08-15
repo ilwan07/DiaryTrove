@@ -200,36 +200,79 @@ form.addEventListener("submit", (ev) => {
     submitBtn.disabled = true;
     addBtn.disabled = true;
 
-    //TODO: Progress
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", form.action, true);
 
-    // Send via fetch, include credentials for session
-    fetch(form.action, {
-        method: "POST",
-        body: fd,
-        credentials: "same-origin",  // Keep session cookies
-        headers: {
-            "X-Requested-With": "XMLHttpRequest"  // Allow server to know it's AJAX
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+    // Progress for upload
+    xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            progressWrap.style.display = "";
+            progressBar.value = percent;
+            progressText.textContent = percent + "%";
         }
-    }).then(async response => {
-        if (!response.ok) {
-            const text = await response.json().catch(()=>gettext("(no body)"));
-            errorbold.textContent = gettext("Upload failed: ") + text.error;
+    };
+
+    xhr.onload = function () {
+        submitBtn.disabled = false;
+        addBtn.disabled = false;
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+            const data = JSON.parse(xhr.responseText);
+            if (data && data.success) {
+                // Revoke created object URLs to free memory
+                for (const it of selectedFiles) {
+                if (it._objectUrl) try { URL.revokeObjectURL(it._objectUrl); } catch(e) {}
+                }
+                // Redirect if server asked for it
+                if (data.redirect) {
+                window.location = data.redirect;
+                return;
+                }
+                // Else reload
+                window.location.reload();
+                return;
+            } else {
+                errorbold.textContent = data && data.error ? data.error : gettext("Upload failed.");
+                error.style.display = "";
+                errorbr.style.display = "";
+                progressWrap.style.display = "none";
+                progressBar.value = 0;
+                progressText.textContent = "0%";
+            }
+            } catch (e) {
+            errorbold.textContent = gettext("Server returned an unexpected response.");
             error.style.display = "";
             errorbr.style.display = "";
-            return;
-        }
-        const data = await response.json().catch(()=>null);
-        if (data && data.redirect) {
-            // Server suggests a redirect
-            window.location = data.redirect;
+            }
         } else {
-            window.location.reload();
+            // Try parse JSON error
+            try {
+            const data = JSON.parse(xhr.responseText);
+            errorbold.textContent = gettext("Upload failed: ") + data.error;
+            error.style.display = "";
+            errorbr.style.display = "";
+            } catch (e) {
+            errorbold.textContent = gettext("Upload failed (status ") + xhr.status + ").";
+            error.style.display = "";
+            errorbr.style.display = "";
+            }
         }
-    }).catch(err => {
-        errorbold.textContent = gettext("Upload error: ") + err.message;
+    };
+
+    xhr.onerror = function () {
+        submitBtn.disabled = false;
+        addBtn.disabled = false;
+        errorbold.textContent = gettext("Network or server error during upload.");
         error.style.display = "";
         errorbr.style.display = "";
-    });
+    };
+
+    // Send
+    xhr.send(fd);
 });
 
 // Initial render

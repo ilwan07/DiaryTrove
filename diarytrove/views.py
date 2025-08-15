@@ -285,7 +285,6 @@ def memory_create(request:HttpRequest):
                                 status=400)
 
         # Create the memory object
-        raise Http404()
         memory = Memory(owner=request.user, date=timezone.now(), lock_time=lock_time,
                         title=title, content=content, mood=mood)
         memory.save()
