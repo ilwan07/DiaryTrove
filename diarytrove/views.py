@@ -268,6 +268,7 @@ def memory_create(request:HttpRequest):
             return JsonResponse({"success": False, "error": _("Please select a valid mood.")}, status=400)
         
         # Validate uploaded files
+        #TODO: Check max total disk size
         files = request.FILES.getlist("files[]")
         total_size = 0  # Files size in bytes
 
@@ -301,7 +302,7 @@ def memory_create(request:HttpRequest):
     return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,
                                                              "moods": [mood[1] for mood in Memory.MOODS],
                                                              "max_upload_bytes": settings.MAX_SUBMIT_MEDIA_SIZE,
-                                                             "max_upload_mib": limit_mib})
+                                                             "max_upload_mib": limit_mib})  #TODO: Check max total disk size
 
 
 @login_required

@@ -31,7 +31,7 @@
                 <br>
                 <div>
                     <label>{%trans "Memory content:"%}<br>
-                    <textarea name="content" id="content" rows="6" required></textarea>
+                    <textarea name="content" id="content" rows="8" required></textarea>
                     </label>
                 </div>
                 <br>
@@ -76,6 +76,7 @@
             <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
         </form>
         <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
+        <span style="display:none" id="can-exit">false</span>
     </main>
 
     {%include "diarytrove/footer.html"%}

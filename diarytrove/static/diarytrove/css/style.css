@@ -261,3 +261,33 @@ form input[type="submit"]:hover {
     background-color: #aee3ff;
     border-radius: 100%;
 }
+
+#file-list {
+    list-style: none;
+    padding-left: 0.5rem;
+}
+
+#file-list li {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid skyblue;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.preview-image, .preview-video, .preview-audio {
+    max-width: 35rem;
+}
+
+.metadata {
+    margin-left: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.remove-btn {
+    margin-right: 1rem;
+    font-size: 2rem !important;
+    border: none !important;
+    background-color: transparent !important;
+}

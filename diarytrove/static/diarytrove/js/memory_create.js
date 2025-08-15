@@ -33,6 +33,7 @@ const submitBtn = document.getElementById("submit-btn");
 const error = document.getElementById("error");
 const errorbold = document.getElementById("errorbold");
 const errorbr = document.getElementById("errorbr");
+const canExitElem = document.getElementById("can-exit");
 
 const MAX_TOTAL_BYTES = document.getElementById("max-bytes").innerText;
 var selectedFiles = [];
@@ -61,7 +62,6 @@ function renderList() {
     selectedCount.textContent = selectedFiles.length + gettext(" file(s) selected");
     selectedFiles.forEach(item => {
         const li = document.createElement("li");
-        li.className = "file-item";
         li.dataset.id = item.id;
 
         // Load previews
@@ -102,6 +102,7 @@ function renderList() {
             // Generic icon placeholder
             //TODO: Use placeholder image
             const box = document.createElement("div");
+            box.className = "preview-file";
             box.textContent = "FILE";
             box.style.width = "80px";
             box.style.height = "48px";
@@ -113,7 +114,7 @@ function renderList() {
         }
 
         const meta = document.createElement("div");
-        meta.className = "meta";
+        meta.className = "metadata";
         const name = document.createElement("div");
         name.textContent = item.file.name;
         const size = document.createElement("div");
@@ -124,14 +125,15 @@ function renderList() {
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "remove-btn";
-        removeBtn.textContent = gettext("Remove");
+        removeBtn.textContent = "✖";
+        removeBtn.title = gettext("Remove");
         removeBtn.onclick = () => {
             removeFile(item.id);
         };
 
+        li.appendChild(removeBtn);
         li.appendChild(previewWrap);
         li.appendChild(meta);
-        li.appendChild(removeBtn);
         fileList.appendChild(li);
     });
 }
@@ -229,7 +231,8 @@ form.addEventListener("submit", (ev) => {
                 }
                 // Redirect if server asked for it
                 if (data.redirect) {
-                window.location = data.redirect;
+                    canExitElem.textContent = "true";
+                    window.location = data.redirect;
                 return;
                 }
                 // Else reload
