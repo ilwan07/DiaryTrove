@@ -16,17 +16,26 @@ class ProfileInLine(admin.TabularInline):
     can_delete = False
 
 
+class MemoryInLine(admin.TabularInline):
+    model = Memory
+    extra = 0
+    classes = ["collapse"]
+    fields = ["title", "mood", "date", "lock_time"]
+
+
 class UserAdminCustom(UserAdmin):
     """
     Keep the default admin entries with a few additions
     """
-    inlines = [ProfileInLine]
+    inlines = [ProfileInLine, MemoryInLine]
     list_display = ["username", "email", "is_staff"]
 
 
 class MemoryMediaInLine(admin.TabularInline):
     model = MemoryMedia
     extra = 0
+    classes = ["collapse"]
+    fields = ["file"]
 
 
 class MemoryAdmin(admin.ModelAdmin):

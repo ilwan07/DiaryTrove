@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'Europe/Paris'  # Change to your own timezone
 
 USE_I18N = True
 

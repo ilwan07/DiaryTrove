@@ -12,7 +12,9 @@ from django.utils.translation import gettext as _
 
 from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .utils import regular_jobs, safe_join
+from .utils import regular_jobs
+
+import os
 
 
 def index(request:HttpRequest):
@@ -236,7 +238,16 @@ def memory_create(request:HttpRequest):
     View to create a new memory
     """
     profile:Profile = request.user.profile
-    limit_mib = round(settings.MAX_SUBMIT_MEDIA_SIZE / 2**20, 3)
+    limit_bytes = settings.MAX_SUBMIT_MEDIA_SIZE
+    limit_mib = round(limit_bytes / 2**20, 3)
+    
+    # Check if the media storage is full
+    if not os.path.exists(settings.PRIVATE_MEDIA_ROOT):
+        storage_full = True  # Consider the storage full if it doesn't exist
+    else:
+        total_disk_max = settings.MAX_GLOBAL_MEDIA_SIZE
+        total_disk_used = os.path.getsize(settings.PRIVATE_MEDIA_ROOT)
+        storage_full = total_disk_used >= total_disk_max - limit_bytes  # The space should be enough for any new memory
 
     if request.method == "POST":
         # Handle posted data
@@ -268,8 +279,10 @@ def memory_create(request:HttpRequest):
             return JsonResponse({"success": False, "error": _("Please select a valid mood.")}, status=400)
         
         # Validate uploaded files
-        #TODO: Check max total disk size
         files = request.FILES.getlist("files[]")
+        if storage_full and files:
+            return JsonResponse({"success": False, "error": _("The media storage is full, you cannot upload new files.")}, status=400)
+        
         total_size = 0  # Files size in bytes
 
         for f in files:
@@ -278,7 +291,7 @@ def memory_create(request:HttpRequest):
             except Exception:
                 return JsonResponse({"success": False, "error": _("Unable to calculat file size.")}, status=400)
 
-        if total_size > settings.MAX_SUBMIT_MEDIA_SIZE:
+        if total_size > limit_bytes:
             # The uploaded files are too large
             total_size_mib = round(total_size / 2**20, 3)
             return JsonResponse({"success": False,
@@ -301,8 +314,9 @@ def memory_create(request:HttpRequest):
     # Give the page for GET requests
     return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,
                                                              "moods": [mood[1] for mood in Memory.MOODS],
-                                                             "max_upload_bytes": settings.MAX_SUBMIT_MEDIA_SIZE,
-                                                             "max_upload_mib": limit_mib})  #TODO: Check max total disk size
+                                                             "max_upload_bytes": limit_bytes,
+                                                             "max_upload_mib": limit_mib,
+                                                             "storage_full": storage_full})
 
 
 @login_required

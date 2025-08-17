@@ -49,5 +49,8 @@ class MemoryMedia(models.Model):
     """
     Represents a private media uploaded by the user for a memory
     """
-    memory = models.ForeignKey(Memory, on_delete=models.CASCADE,  verbose_name=_("Memory of origin"))
+    memory = models.ForeignKey(Memory, on_delete=models.CASCADE, verbose_name=_("Memory of origin"))
     file = models.FileField(storage=private_storage, upload_to="memory_media")
+
+    def __str__(self):
+        return f"{self.file} ({self.pk})"

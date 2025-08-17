@@ -1,23 +1,3 @@
-const checkbox_input = document.querySelector("#checkboxdiv input");
-const locktime_div = document.getElementById("locktimediv");
-const locktime_input = document.querySelector("#locktimediv input");
-
-function checkbox_update() {
-    if (checkbox_input.checked) {
-        locktime_div.style.display = "none";
-        locktime_input.setAttribute("min", 0);
-        locktime_input.value = 0;  // Set to 0 if default lock time is used
-    } else {
-        locktime_div.style.display = "";
-        locktime_input.setAttribute("min", 1);
-        locktime_input.value = 365;
-    }
-}
-
-checkbox_update();
-checkbox_input.addEventListener("change", checkbox_update);
-
-
 // Handle the media upload and submit process
 (function () {
 // Keep selected files in an array so we can add or remove before submit
@@ -36,6 +16,7 @@ const errorbr = document.getElementById("errorbr");
 const canExitElem = document.getElementById("can-exit");
 
 const MAX_TOTAL_BYTES = document.getElementById("max-bytes").innerText;
+const file_asset_path = document.getElementById("file-asset-path").innerText;
 var selectedFiles = [];
 
 function uid() {
@@ -100,17 +81,10 @@ function renderList() {
 
         else {
             // Generic icon placeholder
-            //TODO: Use placeholder image
-            const box = document.createElement("div");
-            box.className = "preview-file";
-            box.textContent = "FILE";
-            box.style.width = "80px";
-            box.style.height = "48px";
-            box.style.display = "flex";
-            box.style.alignItems = "center";
-            box.style.justifyContent = "center";
-            box.style.border = "1px solid #ddd";
-            previewWrap.appendChild(box);
+            const file_box = document.createElement("img");
+            file_box.className = "preview-file";
+            file_box.src = file_asset_path;
+            previewWrap.appendChild(file_box);
         }
 
         const meta = document.createElement("div");
@@ -189,6 +163,9 @@ form.addEventListener("submit", (ev) => {
         errorbold.textContent = "The uploaded files are too large. The maximum is " + max_total_mib + " MiB total, you uploaded " + total_mib + " Mib.";
         error.style.display = "";
         errorbr.style.display = "";
+        progressWrap.style.display = "none";
+        progressBar.value = 0;
+        progressText.textContent = "0%";
         return;
     }
 
@@ -250,18 +227,27 @@ form.addEventListener("submit", (ev) => {
             errorbold.textContent = gettext("Server returned an unexpected response.");
             error.style.display = "";
             errorbr.style.display = "";
+            progressWrap.style.display = "none";
+            progressBar.value = 0;
+            progressText.textContent = "0%";
             }
         } else {
             // Try parse JSON error
             try {
-            const data = JSON.parse(xhr.responseText);
-            errorbold.textContent = gettext("Upload failed: ") + data.error;
-            error.style.display = "";
-            errorbr.style.display = "";
+                const data = JSON.parse(xhr.responseText);
+                errorbold.textContent = gettext("Upload failed: ") + data.error;
+                error.style.display = "";
+                errorbr.style.display = "";
+                progressWrap.style.display = "none";
+                progressBar.value = 0;
+                progressText.textContent = "0%";
             } catch (e) {
-            errorbold.textContent = gettext("Upload failed (status ") + xhr.status + ").";
-            error.style.display = "";
-            errorbr.style.display = "";
+                errorbold.textContent = gettext("Upload failed (status ") + xhr.status + ").";
+                error.style.display = "";
+                errorbr.style.display = "";
+                progressWrap.style.display = "none";
+                progressBar.value = 0;
+                progressText.textContent = "0%";
             }
         }
     };
@@ -272,6 +258,9 @@ form.addEventListener("submit", (ev) => {
         errorbold.textContent = gettext("Network or server error during upload.");
         error.style.display = "";
         errorbr.style.display = "";
+        progressWrap.style.display = "none";
+        progressBar.value = 0;
+        progressText.textContent = "0%";
     };
 
     // Send

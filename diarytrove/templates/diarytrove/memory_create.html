@@ -59,6 +59,7 @@
                 </div>
                 <br>
 
+                {%if not storage_full%}
                 <input id="file-input" type="file" style="display:none" multiple>
                 <div>
                     <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
@@ -71,17 +72,26 @@
                     <progress id="upload-progress" max=100 value=0></progress>
                     <p id="progress-text">0%</p>
                 </div>
+                {%else%}
+                <small>
+                    <i>{%trans "Unfortunately, the server's media storage is full, you cannot upload media files. We apologize for the inconvenience."%}</i>
+                </small>
+                {%endif%}
             </div>
             <br>
             <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
         </form>
         <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
-        <span style="display:none" id="can-exit">false</span>
     </main>
+
+    <!-- Variables to store in the page itself -->
+        <span style="display:none" id="can-exit">false</span>
+        <span style="display:none" id="file-asset-path">{%static "diarytrove/assets/file.svg"%}</span>
 
     {%include "diarytrove/footer.html"%}
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
-    <script src="{% static 'diarytrove/js/memory_create.js' %}"></script>
+    <script src="{% static 'diarytrove/js/memory_create_fields.js' %}"></script>
+    {%if not storage_full%}<script src="{% static 'diarytrove/js/memory_create_files.js' %}"></script>{%endif%}
 </body>
 </html>
