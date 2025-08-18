@@ -25,7 +25,7 @@
             <div id="formcontent">
                 <div>
                     <label>{%trans "Memory title:"%}<br>
-                    <input type="text" name="title" id="title" required>
+                    <input type="text" name="title" id="title" maxlength=255 required>
                     </label>
                 </div>
                 <br>
@@ -57,9 +57,9 @@
                         <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}} min=1>
                     </label>
                 </div>
-                <br>
 
                 {%if not storage_full%}
+                <div class="line"></div>
                 <input id="file-input" type="file" style="display:none" multiple>
                 <div>
                     <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
@@ -72,26 +72,30 @@
                     <progress id="upload-progress" max=100 value=0></progress>
                     <p id="progress-text">0%</p>
                 </div>
+                <div class="line"></div>
                 {%else%}
+                <br>
                 <small>
                     <i>{%trans "Unfortunately, the server's media storage is full, you cannot upload media files. We apologize for the inconvenience."%}</i>
                 </small>
                 {%endif%}
             </div>
-            <br>
             <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
         </form>
         <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
     </main>
 
-    <!-- Variables to store in the page itself -->
-        <span style="display:none" id="can-exit">false</span>
-        <span style="display:none" id="file-asset-path">{%static "diarytrove/assets/file.svg"%}</span>
-
     {%include "diarytrove/footer.html"%}
+
     <script src="{% url 'javascript-catalog' %}"></script>
+
     <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+    <script type="text/javascript">use_can_exit = true; var can_exit = false;</script>
+
     <script src="{% static 'diarytrove/js/memory_create_fields.js' %}"></script>
-    {%if not storage_full%}<script src="{% static 'diarytrove/js/memory_create_files.js' %}"></script>{%endif%}
+    {%if not storage_full%}
+        <script type="text/javascript">const file_asset_path = "{% static 'diarytrove/assets/file.svg' %}";</script>
+        <script src="{% static 'diarytrove/js/memory_create_files.js' %}"></script>
+    {%endif%}
 </body>
 </html>

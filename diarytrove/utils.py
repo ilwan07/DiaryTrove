@@ -1,24 +1,38 @@
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, Http404, FileResponse
+from django.contrib.auth.models import User
 
-from . import jobs
+from .models import Profile, MemoryMedia
 
 from pathlib import Path
 from mimetypes import guess_type
 
-
-def regular_jobs(func):
+def check_profiles(user:User=None):
     """
-    Do some regular jobs for authenticated users
-    Ensures the backend is ready for the request
+    Make sure that the user has a profile
+    Only triggers manually to avoid perofrmance issues
+    """
+    if user is not None:
+        affected_users = [user]
+    else:
+        affected_users = User.objects.all()
+    
+    for affected_user in affected_users:
+        if not hasattr(affected_user, "profile"):
+            profile = Profile(user=affected_user)
+            profile.save()
+
+
+def needs_profile(func):
+    """
+    Decorator to ensures the request user has a profile
+    Profile may be missing if the user was created manually
     """
     def wrapper(*args, **kwargs):
         request: HttpRequest = args[0]
         if request.user.is_authenticated:
-            # Execute important jobs
-            jobs.check_profiles(request.user)
+            check_profiles(request.user)
         return func(*args, **kwargs)
-    
     return wrapper
 
 
@@ -36,6 +50,7 @@ def private_media_response(request:HttpRequest, file_path:Path):
     """
     Get a private media file as a file response, only call internally
     Ownership verification must be passed before calling this function
+    The file_path is local to the private media directory
     """
     # Resolve the safe absolute path
     try:
@@ -50,7 +65,7 @@ def private_media_response(request:HttpRequest, file_path:Path):
     if not settings.DEBUG:
         internal_path = f"/internal_protected/{file_path}"  # Matches the Nginx config location
         response = HttpResponse()
-        ctype, encoding = guess_type(str(abs_path))
+        ctype = guess_type(str(abs_path))[0]
         if ctype:
             response["Content-Type"] = ctype
         response["X-Accel-Redirect"] = internal_path
@@ -60,3 +75,13 @@ def private_media_response(request:HttpRequest, file_path:Path):
     # In dev with runserver
     response = FileResponse(open(abs_path, "rb"), as_attachment=False, filename=abs_path.name)
     return response
+
+
+def memory_media_mimetype(memory_media:MemoryMedia):
+    """
+    Get the mimetype of a memory media object
+    """
+    ctype = guess_type(str(settings.PRIVATE_MEDIA_ROOT / memory_media.file.name))[0]
+    if ctype is None:
+        return "application/octet-stream"  # Default to binary if no type is found
+    return ctype

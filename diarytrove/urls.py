@@ -14,4 +14,5 @@ urlpatterns = [
     path("home/", views.home, name="home"),
     path("memory/create/", views.memory_create, name="memory_create"),
     path("memory/<int:memory_pk>/", views.memory_view, name="memory_view"),
+    path("memory/<int:memory_pk>/<int:media_pk>/", views.memory_media_view, name="memory_media_view"),
 ]

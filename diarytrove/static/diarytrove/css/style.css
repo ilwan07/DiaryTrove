@@ -265,12 +265,13 @@ form input[type="submit"]:hover {
 #file-list {
     list-style: none;
     padding-left: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 #file-list li {
     display: flex;
     align-items: center;
-    border-bottom: 2px solid skyblue;
+    border-top: 1px solid skyblue;
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
@@ -294,4 +295,30 @@ form input[type="submit"]:hover {
     font-size: 2rem !important;
     border: none !important;
     background-color: transparent !important;
+}
+
+.line {
+    width: 100%;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-top: 2px solid skyblue;
+}
+
+#memory-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#mood-emoji {
+    font-size: 3rem;
+}
+
+#memory-content {
+    font-size: 1.2rem;
+    text-align: justify;
+    padding: 0.6rem;
+    border: 2.5px solid skyblue;
+    border-radius: 1.2rem;
 }

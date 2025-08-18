@@ -1,0 +1,45 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DiaryTrove | {%trans "View Memory"%}</title>
+    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
+</head>
+
+<body>
+    <header>
+        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "View Memory"%}</b></p>
+        <div id="headerfill"></div>
+        <div id="buttonrow">
+            <a href="{%url 'memory_create'%}">{%trans "Create Memory"%}</a>
+            <a href="{%url 'home'%}">{%trans "Home"%}</a>
+        </div>
+    </header>
+
+    <main>
+        <div id="memory-header">
+            <p id="mood-emoji">{{mood_emoji}}</p>
+            <div id="title-date">
+                <h1>{{memory.title}}</h1>
+                <p id="datetime"><i>{{memory.date}}</i></p>
+            </div>
+        </div>
+        <div class="line"></div>
+        <p id="memory-content">
+            {%for paragraph in content%}
+                {%if forloop.counter > 1%}<br>{%endif%}
+                {{paragraph}}
+            {%endfor%}
+        </p>
+        <div class="line"></div>
+    </main>
+    
+    {%include "diarytrove/footer.html"%}
+
+    <script src="{% url 'javascript-catalog' %}"></script>
+</body>
+</html>

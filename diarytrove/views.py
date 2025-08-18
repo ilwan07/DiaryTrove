@@ -12,8 +12,9 @@ from django.utils.translation import gettext as _
 
 from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .utils import regular_jobs
+from .utils import needs_profile, memory_media_mimetype, private_media_response
 
+from pathlib import Path
 import os
 
 
@@ -166,7 +167,7 @@ def contact_email(request:HttpRequest):
 
 
 @login_required
-@regular_jobs
+@needs_profile
 def preferences(request:HttpRequest):
     """
     Change the user preferences
@@ -221,7 +222,7 @@ def preferences(request:HttpRequest):
 
 
 @login_required(redirect_field_name=None, login_url="index")  # Simply redirect to the index if the user is not logged in
-@regular_jobs
+@needs_profile
 def home(request:HttpRequest):
     """
     The user's home page
@@ -232,7 +233,7 @@ def home(request:HttpRequest):
 
 
 @login_required
-@regular_jobs
+@needs_profile
 def memory_create(request:HttpRequest):
     """
     View to create a new memory
@@ -250,18 +251,20 @@ def memory_create(request:HttpRequest):
         storage_full = total_disk_used >= total_disk_max - limit_bytes  # The space should be enough for any new memory
 
     if request.method == "POST":
-        # Handle posted data
+        # Handle post data
         if not all([elem in request.POST and request.POST.get(elem, "") != "" for elem in ("title", "content", "mood", "lock_time")]):
             return JsonResponse({"success": False, "error": _("Some required fields are missing.")}, status=400)
         
         title = request.POST["title"]
-        content = request.POST["content"]
+        content = (request.POST["content"])
         lock_time = request.POST["lock_time"]
         mood = request.POST["mood"]
         
         # Validate the data
         if not title or not content:
             return JsonResponse({"success": False, "error": _("Title and content cannot be empty.")}, status=400)
+        if len(title) > 255:
+            return JsonResponse({"success": False, "error": _("Title cannot be longer than 255 characters.")}, status=400)
         if not profile.editable_lock_time:
             lock_time = 0  # Don't allow lock time modification if it's specified in the preferences
         else:
@@ -300,15 +303,18 @@ def memory_create(request:HttpRequest):
 
         # Create the memory object
         memory = Memory(owner=request.user, date=timezone.now(), lock_time=lock_time,
-                        title=title, content=content, mood=mood)
+                        title=title, content=str(content).strip(), mood=mood)
         memory.save()
+
+        # Update the last memory creation date
+        profile.last_memory_date = timezone.now()
 
         for f in files:
             MemoryMedia.objects.create(memory=memory, file=f)
 
         # Return json for AJAX requests or redirect for normal requests
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return JsonResponse({"success": True, "redirect": reverse("memory_view", args=[memory.pk])})
+            return JsonResponse({"success": True, "redirect": reverse("home")})
         return redirect("memory_view", memory.pk, {"profile": profile})
 
     # Give the page for GET requests
@@ -320,9 +326,73 @@ def memory_create(request:HttpRequest):
 
 
 @login_required
-@regular_jobs
 def memory_view(request:HttpRequest, memory_pk:int):
     """
     View to display a memory
     """
-    return HttpResponse("NOT IMPLEMENTED")  #TODO
+    user = request.user
+    memory:Memory = get_object_or_404(Memory, pk=memory_pk)
+
+
+    owner = memory.owner
+    owner_profile:Profile = owner.profile
+
+    # Verify access rights
+    if not (user.is_superuser or user == owner):
+        raise PermissionDenied("You are not the owner of this memory")
+    
+    # Check if the memory is unlocked
+    lock_time = memory.lock_time
+    if lock_time == 0:
+        lock_time = owner_profile.lock_time
+    
+    if memory.date + timezone.timedelta(days=lock_time) >= timezone.now():
+        raise Http404("This memory is still locked")
+    
+    # Create a list of the memory media objects with the media primary keys, the rough media types and the mimetypes
+    media_data = []
+    for memory_media in memory.memorymedia_set.all():
+        ctype = memory_media_mimetype(memory_media)
+        if ctype.startswith("image/"):
+            media_type = "image"
+        elif ctype.startswith("video/"):
+            media_type = "video"
+        elif ctype.startswith("audio/"):
+            media_type = "audio"
+        else:
+            media_type = "file"
+        media_data.append({"pk": memory_media.pk, "type": media_type, "mimetype": ctype})
+
+    # Render the memory view page
+    return render(request, "diarytrove/memory_view.html", {"memory": memory,
+                                                           "content": memory.content.strip().split("\n"),
+                                                           "mood_emoji": memory.MOODS[memory.mood-1][1],
+                                                           "media_data": media_data})
+
+
+@login_required
+def memory_media_view(request:HttpRequest, memory_pk:int, media_pk:int):
+    """
+    Returns the raw media file if the data is valid and verifications passed
+    """
+    memory:Memory = get_object_or_404(Memory, pk=memory_pk)
+    memory_media:MemoryMedia = get_object_or_404(MemoryMedia, pk=media_pk)
+
+    # Check path consistency
+    if memory_media not in memory.memorymedia_set.all():
+        raise Http404("The memory doesn't contain this media")
+    
+    # Verify access rights
+    if not(request.user.is_superuser or request.user == memory.owner):
+        raise PermissionDenied("You are not the owner of this media")
+    
+    # Make sure there is a file path
+    if memory_media.file:
+        file_path = memory_media.file.name
+        if not file_path:
+            raise Http404("No path associated with the media file")
+    else:
+        raise Http404("No file associated with the media")
+    
+    # Everything is in order, return media file response
+    return private_media_response(request, Path(file_path))

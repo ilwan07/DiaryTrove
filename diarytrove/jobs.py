@@ -1,9 +1,6 @@
-from django.contrib.auth.models import User
 from django.apps import apps
 from django.conf import settings
 from django.db.models import FileField, ImageField
-
-from .models import Profile
 
 from threading import Thread
 from pathlib import Path
@@ -38,22 +35,6 @@ def jobs():
             print(f"\n/!\\ Error in job scheduler: {e}:\n{traceback.format_exc()}")
         finally:
             time.sleep(1)
-
-
-def check_profiles(user:User=None):
-    """
-    Make sure that each user has a profile
-    Only triggers manually to avoid perofrmance issues
-    """
-    if user is not None:
-        affected_users = [user]
-    else:
-        affected_users = User.objects.all()
-    
-    for affected_user in affected_users:
-        if not hasattr(affected_user, "profile"):
-            profile = Profile(user=affected_user)
-            profile.save()
 
 
 def cleanup_private_media():

@@ -16,7 +16,6 @@ const errorbr = document.getElementById("errorbr");
 const canExitElem = document.getElementById("can-exit");
 
 const MAX_TOTAL_BYTES = document.getElementById("max-bytes").innerText;
-const file_asset_path = document.getElementById("file-asset-path").innerText;
 var selectedFiles = [];
 
 function uid() {
@@ -206,10 +205,13 @@ form.addEventListener("submit", (ev) => {
                 for (const it of selectedFiles) {
                 if (it._objectUrl) try { URL.revokeObjectURL(it._objectUrl); } catch(e) {}
                 }
-                // Redirect if server asked for it
+                // Redirect if server asked for it after confirming success to the user
                 if (data.redirect) {
-                    canExitElem.textContent = "true";
-                    window.location = data.redirect;
+                    can_exit = true;
+                    document.querySelector("main").innerHTML = "<h1>" + gettext("Memory created successfully! You will be redirected shortly...") + "</h1>";
+                    setTimeout(() => {
+                        window.location = data.redirect;
+                    }, 2500);
                 return;
                 }
                 // Else reload

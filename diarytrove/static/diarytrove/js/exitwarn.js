@@ -2,6 +2,7 @@ const form = document.querySelector("form");
 const inputs = form.querySelectorAll("input:not([type='submit']):not([type='hidden'])");
 const canExitElem = document.getElementById("can-exit");
 var modified = false;
+var use_can_exit = false;
 
 // Make each input trigger the modify function on change
 inputs.forEach(function(input) {
@@ -29,8 +30,10 @@ if (form) {
 
 // Warn the user before leaving the page if unsaved data exists
 window.addEventListener("beforeunload", function(e) {
-    if (canExitElem && canExitElem.textContent.trim() === "true") {
-        return;
+    if (use_can_exit) {
+        if (can_exit) {
+            return;
+        }
     }
     if (modified) {
         e.preventDefault();
