@@ -204,6 +204,12 @@ form input[type="submit"]:hover {
     margin-top: 0.8rem;
 }
 
+a img.ext-inline {
+    height: 0.5rem;
+    margin-right: 0.2rem;
+    align-items: bottom;
+}
+
 #buttonlinks {
     display: flex;
     flex-direction: row;
@@ -277,11 +283,12 @@ form input[type="submit"]:hover {
 }
 
 .preview-image, .preview-video, .preview-audio {
-    max-width: 35rem;
+    width: 35rem;
 }
 
 .preview-file {
     width: 5rem;
+    margin-right: 30rem;
 }
 
 .metadata {
@@ -321,4 +328,10 @@ form input[type="submit"]:hover {
     padding: 0.6rem;
     border: 2.5px solid skyblue;
     border-radius: 1.2rem;
+}
+
+a.open-media img {
+    margin-right: 1rem;
+    padding: 0.5rem;
+    width: 3rem;
 }

@@ -13,7 +13,6 @@ const submitBtn = document.getElementById("submit-btn");
 const error = document.getElementById("error");
 const errorbold = document.getElementById("errorbold");
 const errorbr = document.getElementById("errorbr");
-const canExitElem = document.getElementById("can-exit");
 
 const MAX_TOTAL_BYTES = document.getElementById("max-bytes").innerText;
 var selectedFiles = [];
@@ -46,6 +45,7 @@ function renderList() {
 
         // Load previews
         const previewWrap = document.createElement("div");
+        previewWrap.className = "media-preview";
 
         if (item.file.type.startsWith("image/")) {
             const img = document.createElement("img");
@@ -62,7 +62,6 @@ function renderList() {
             vid.className = "preview-video";
             vid.src = URL.createObjectURL(item.file);
             vid.controls = true;
-            vid.muted = true;
             vid.preload = "metadata";
             // Store object URL so we can revoke later
             item._objectUrl = vid.src;
@@ -88,9 +87,9 @@ function renderList() {
 
         const meta = document.createElement("div");
         meta.className = "metadata";
-        const name = document.createElement("div");
+        const name = document.createElement("p");
         name.textContent = item.file.name;
-        const size = document.createElement("div");
+        const size = document.createElement("p");
         size.textContent = Math.round(item.file.size*1000 / (2**20)) / 1000 + " " + gettext("MiB");
         meta.appendChild(name);
         meta.appendChild(size);

@@ -1,13 +1,16 @@
 const editable_lock_time_input = document.getElementById("id_editable_lock_time");
 const editable_lock_time_div = editable_lock_time_input.parentElement;
 const lock_time_input = document.getElementById("id_lock_time");
-const editable = document.getElementById("editable").value;
+const email_reminder_label = document.querySelector("label[for='id_mail_reminder']");
 const form = document.querySelector("form");
 
 editable_lock_time_input.setAttribute("onchange", "editable()");
 
+// Add a precision in the email reminder label
+email_reminder_label.innerHTML += "<br>" + gettext("(0 to disable)");
+
 // Make sure to check the box if it should be editable
-if (editable === "True") {
+if (editable) {
     editable_lock_time_input.checked = true;
 }
 

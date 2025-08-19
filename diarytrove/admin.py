@@ -48,7 +48,7 @@ class MemoryAdmin(admin.ModelAdmin):
         (_("Additional fields"), {"fields": ["mood"]}),
     ]
     inlines = [MemoryMediaInLine]
-    list_display = ["title", "owner", "date", "mood"]
+    list_display = ["pk", "title", "owner", "date", "mood"]
     list_filter = ["owner", "date", "mood"]
     search_fields = ["title", "content"]
 

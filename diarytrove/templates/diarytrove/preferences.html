@@ -23,7 +23,6 @@
         {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
         <form action="{%url 'preferences'%}" method="post" id="smallform">
             {% csrf_token %}
-            <input type="hidden" name="editable" id="editable" value={{editable}}>
             <div id="formcontent">
                 {{form}}
             </div>
@@ -32,9 +31,12 @@
     </main>
 
     {%include "diarytrove/footer.html"%}
-    
+
     <script src="{% url 'javascript-catalog' %}"></script>
+    <script type="text/javascript">var editable = {%if editable%}true{%else%}false{%endif%};</script>
     <script src="{% static 'diarytrove/js/preferences.js' %}"></script>
+
+    <script type="text/javascript">var can_exit = false;</script>
     <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
 </body>
 </html>

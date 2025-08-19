@@ -361,7 +361,7 @@ def memory_view(request:HttpRequest, memory_pk:int):
             media_type = "audio"
         else:
             media_type = "file"
-        media_data.append({"pk": memory_media.pk, "type": media_type, "mimetype": ctype})
+        media_data.append({"pk": memory_media.pk, "filename": Path(memory_media.file.name).name, "type": media_type, "mimetype": ctype})
 
     # Render the memory view page
     return render(request, "diarytrove/memory_view.html", {"memory": memory,

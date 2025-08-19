@@ -89,13 +89,13 @@
 
     <script src="{% url 'javascript-catalog' %}"></script>
 
+    <script type="text/javascript">var can_exit = false;</script>
     <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
-    <script type="text/javascript">use_can_exit = true; var can_exit = false;</script>
 
     <script src="{% static 'diarytrove/js/memory_create_fields.js' %}"></script>
     {%if not storage_full%}
         <script type="text/javascript">const file_asset_path = "{% static 'diarytrove/assets/file.svg' %}";</script>
-        <script src="{% static 'diarytrove/js/memory_create_files.js' %}"></script>
+        <script src="{% static 'diarytrove/js/memory_create_media.js' %}"></script>
     {%endif%}
 </body>
 </html>
