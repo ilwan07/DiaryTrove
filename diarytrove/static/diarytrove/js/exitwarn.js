@@ -1,6 +1,5 @@
-const form = document.querySelector("form");
 const form_item = document.querySelector("form");
-const inputs = form.querySelectorAll("input:not([type='submit']):not([type='hidden'])");
+const inputs = form_item.querySelectorAll("input:not([type='submit']):not([type='hidden'])");
 var modified = false;
 
 // Make each input trigger the modify function on change

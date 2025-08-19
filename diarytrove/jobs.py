@@ -120,3 +120,17 @@ def cleanup_private_media():
                 p.unlink()
         except Exception:
             print(f"Failed to delete orphaned private media {p}")
+    
+    # Delete empty subfolders
+    top_folders = ["memory_media"]  # Folders relative to the private media root
+    for folder in top_folders:
+        folder_path = private_root / folder
+        if not folder_path.exists():
+            continue
+        # Remove empty folders recursively
+        for subfolder in folder_path.rglob("*"):
+            if subfolder.is_dir() and not any(subfolder.iterdir()):
+                try:
+                    subfolder.rmdir()  # Remove empty subdirectory
+                except Exception:
+                    print(f"Failed to remove empty subfolder {subfolder}")
