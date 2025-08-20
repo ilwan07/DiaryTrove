@@ -1,101 +1,91 @@
 {% load static %}
 {% load i18n %}
+{%trans "Create Memory" as subtitle%}
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>DiaryTrove | {%trans "Create Memory"%}</title>
-    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
-</head>
+{%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-    <header>
-        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Create Memory"%}</b></p>
-        <div id="headerfill"></div>
-        <div id="buttonrow">
-            <a href="{%url 'home'%}">{%trans "Home"%}</a>
-        </div>
-    </header>
+{%include "diarytrove/subtemplates/header.html" with button_home=True%}
 
-    <main>
-        <form id="upload-form" method="post" action="{%url 'memory_create'%}">
-            {% csrf_token %}
-            <div id="formcontent">
-                <div>
-                    <label>{%trans "Memory title:"%}<br>
-                    <input type="text" name="title" id="title" maxlength=255 required>
-                    </label>
-                </div>
-                <br>
-                <div>
-                    <label>{%trans "Memory content:"%}<br>
-                    <textarea name="content" id="content" rows="8" required></textarea>
-                    </label>
-                </div>
-                <br>
-                <div>
-                    <p>{%trans "Select your current mood:"%}</p>
-                    <div id="moodsdiv">
-                        {%for mood in moods%}
-                        <input type="radio" name="mood" value={{forloop.counter}} id="mood{{forloop.counter}}"
-                               style="display:none" {%if forloop.counter == 1%}checked{%endif%}>
-                        <label for="mood{{forloop.counter}}">{{mood}}</label>
-                        {%endfor%}
-                    </div>
-                </div>
-                <br>
-                <div id="checkboxdiv">
-                    <label for="default_lock_time">{%trans "Use default lock time:"%}</label>
-                    <input type="checkbox" name="default_lock_time" id="default_lock_time" checked
-                           {%if not profile.editable_lock_time%}disabled style="cursor: initial"{%endif%}>
-                </div>
-                <div id="locktimediv">
-                    <br>
-                    <label>{%trans "Lock time in days:"%}<br>
-                        <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}} min=1>
-                    </label>
-                </div>
-
-                {%if not storage_full%}
-                <div class="line"></div>
-                <input id="file-input" type="file" style="display:none" multiple>
-                <div>
-                    <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
-                    <span id="selected-count">{%trans "No files selected"%}</span>
-                    <br><small>{%trans "Max total upload:"%} {{max_upload_mib}} {%trans "MiB"%}</small>
-                    <span id="max-bytes" style="display:none">{{max_upload_bytes}}</span>
-                </div>
-                <ul id="file-list"></ul>
-                <div id="progress-wrap" style="display:none">
-                    <progress id="upload-progress" max=100 value=0></progress>
-                    <p id="progress-text">0%</p>
-                </div>
-                <div class="line"></div>
-                {%else%}
-                <br>
-                <small>
-                    <i>{%trans "Unfortunately, the server's media storage is full, you cannot upload media files. We apologize for the inconvenience."%}</i>
-                </small>
-                {%endif%}
+<main>
+    <form id="upload-form" method="post" action="{%url 'memory_create'%}">
+        {% csrf_token %}
+        <div id="formcontent">
+            <div>
+                <label>{%trans "Memory title:"%}<br>
+                <input type="text" name="title" id="title" maxlength=255 required>
+                </label>
             </div>
-            <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
-        </form>
-        <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
-    </main>
+            <br>
+            <div>
+                <label>{%trans "Memory content:"%}<br>
+                <textarea name="content" id="content" rows="8" required></textarea>
+                </label>
+            </div>
+            <br>
+            <div>
+                <p>{%trans "Select your current mood:"%}</p>
+                <div id="moodsdiv">
+                    {%for mood in moods%}
+                    <input type="radio" name="mood" value={{forloop.counter}} id="mood{{forloop.counter}}"
+                            style="display:none" {%if forloop.counter == 1%}checked{%endif%}>
+                    <label for="mood{{forloop.counter}}">{{mood}}</label>
+                    {%endfor%}
+                </div>
+            </div>
+            <br>
+            <div id="checkboxdiv">
+                <label for="default_lock_time">{%trans "Use default lock time:"%}</label>
+                <input type="checkbox" name="default_lock_time" id="default_lock_time" checked
+                        {%if not profile.editable_lock_time%}disabled style="cursor: initial"{%endif%}>
+            </div>
+            <div id="locktimediv">
+                <br>
+                <label>{%trans "Lock time in days:"%}<br>
+                    <input type="number" name="lock_time" id="lock_time" value={{profile.lock_time}} min=1>
+                </label>
+            </div>
 
-    {%include "diarytrove/footer.html"%}
+            {%if not storage_full%}
+            <div class="line"></div>
+            <input id="file-input" type="file" style="display:none" multiple>
+            <div>
+                <button type="button" id="add-files-btn">{%trans "Add files"%}</button>
+                <span id="selected-count">{%trans "No files selected"%}</span>
+                <br><small>{%trans "Max total upload:"%} {{max_upload_mib}} {%trans "MiB"%}</small>
+                <span id="max-bytes" style="display:none">{{max_upload_bytes}}</span>
+            </div>
+            <ul id="file-list"></ul>
+            <div id="progress-wrap" style="display:none">
+                <progress id="upload-progress" max=100 value=0></progress>
+                <p id="progress-text">0%</p>
+            </div>
+            <div class="line"></div>
+            {%else%}
+            <br>
+            <small>
+                <i>{%trans "Unfortunately, the server's media storage is full, you cannot upload media files. We apologize for the inconvenience."%}</i>
+            </small>
+            {%endif%}
+        </div>
+        <input type="submit" id="submit-btn" value="{%trans 'Create memory'%}">
+    </form>
+    <br id="errorbr" style="display:none"><p id="error" style="display:none"><b id="errorbold"></b></p>
+</main>
 
-    <script src="{% url 'javascript-catalog' %}"></script>
+{%include "diarytrove/subtemplates/footer.html"%}
 
-    <script type="text/javascript">var can_exit = false;</script>
-    <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+<script src="{% url 'javascript-catalog' %}"></script>
 
-    <script src="{% static 'diarytrove/js/memory_create_fields.js' %}"></script>
-    {%if not storage_full%}
-        <script type="text/javascript">const file_asset_path = "{% static 'diarytrove/assets/file.svg' %}";</script>
-        <script src="{% static 'diarytrove/js/memory_create_media.js' %}"></script>
-    {%endif%}
+<script type="text/javascript">var can_exit = false;</script>
+<script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+
+<script src="{% static 'diarytrove/js/memory_create_fields.js' %}"></script>
+{%if not storage_full%}
+    <script type="text/javascript">const file_asset_path = "{% static 'diarytrove/assets/file.svg' %}";</script>
+    <script src="{% static 'diarytrove/js/memory_create_media.js' %}"></script>
+{%endif%}
 </body>
 </html>

@@ -22,7 +22,7 @@ def index(request:HttpRequest):
     """
     The page to return when requesting the index page
     """
-    return render(request, "diarytrove/index.html", {"logged_in": request.user.is_authenticated})
+    return render(request, "diarytrove/index.html", {"user": request.user})
 
 
 def auth_signup(request:HttpRequest):
@@ -134,7 +134,8 @@ def auth_login(request:HttpRequest):
         # Create the form and give the page
         form = LoginForm()
     
-    return render(request, "diarytrove/login.html", {"form": form, "error":error_message})
+    next_url = request.GET["next"] if "next" in request.GET else request.POST["next"] if "next" in request.POST else None
+    return render(request, "diarytrove/login.html", {"form": form, "error": error_message, "next": next_url})
 
 
 def auth_logout(request:HttpRequest):
@@ -149,14 +150,14 @@ def conditions(request:HttpRequest):
     """
     Returns  page with the terms and conditions
     """
-    return render(request, "diarytrove/conditions.html", {"user": request.user})
+    return render(request, "diarytrove/information/conditions.html", {"user": request.user})
 
 
 def passwords(request:HttpRequest):
     """
     Returns a page explaining password security
     """
-    return render(request, "diarytrove/passwords.html", {"user": request.user})
+    return render(request, "diarytrove/information/passwords.html", {"user": request.user})
 
 
 def contact_email(request:HttpRequest):
@@ -230,6 +231,15 @@ def home(request:HttpRequest):
     user = request.user
 
     return render(request, "diarytrove/home.html", {"user": user})
+
+
+@login_required
+def gallery(request:HttpRequest):
+    """
+    A gallery to browse unlocked memories
+    """
+    #TODO: get required context elements
+    return render(request, "diarytrove/gallery.html",  {})
 
 
 @login_required

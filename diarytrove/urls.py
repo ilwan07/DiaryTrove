@@ -12,6 +12,7 @@ urlpatterns = [
     path("sendmail/", views.contact_email, name="contact_email"),
     path("preferences/", views.preferences, name="preferences"),
     path("home/", views.home, name="home"),
+    path("gallery/", views.gallery, name="gallery"),
     path("memory/create/", views.memory_create, name="memory_create"),
     path("memory/<int:memory_pk>/", views.memory_view, name="memory_view"),
     path("memory/<int:memory_pk>/<int:media_pk>/", views.memory_media_view, name="memory_media_view"),

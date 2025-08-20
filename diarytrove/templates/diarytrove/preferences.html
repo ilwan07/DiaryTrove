@@ -1,42 +1,32 @@
 {% load static %}
 {% load i18n %}
+{%trans "Preferences" as subtitle%}
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>DiaryTrove | {%trans "Preferences"%}</title>
-    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
-</head>
+{%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-    <header>
-        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Preferences"%}</b></p>
-        <div id="headerfill"></div>
-        <div id="buttonrow">
-            <a href="{%url 'home'%}">{%trans "Home"%}</a>
+{%include "diarytrove/subtemplates/header.html" with button_home=True%}
+
+<main>
+    {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
+    <form action="{%url 'preferences'%}" method="post" id="smallform">
+        {% csrf_token %}
+        <div id="formcontent">
+            {{form}}
         </div>
-    </header>
+        <input type="submit" value="{%trans 'Apply preferences'%}">
+    </form>
+</main>
 
-    <main>
-        {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
-        <form action="{%url 'preferences'%}" method="post" id="smallform">
-            {% csrf_token %}
-            <div id="formcontent">
-                {{form}}
-            </div>
-            <input type="submit" value="{%trans 'Apply preferences'%}">
-        </form>
-    </main>
+{%include "diarytrove/subtemplates/footer.html"%}
 
-    {%include "diarytrove/footer.html"%}
+<script src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript">var editable = {%if editable%}true{%else%}false{%endif%};</script>
+<script src="{% static 'diarytrove/js/preferences.js' %}"></script>
 
-    <script src="{% url 'javascript-catalog' %}"></script>
-    <script type="text/javascript">var editable = {%if editable%}true{%else%}false{%endif%};</script>
-    <script src="{% static 'diarytrove/js/preferences.js' %}"></script>
-
-    <script type="text/javascript">var can_exit = false;</script>
-    <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+<script type="text/javascript">var can_exit = false;</script>
+<script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
 </body>
 </html>

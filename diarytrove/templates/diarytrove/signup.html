@@ -1,45 +1,34 @@
 {% load static %}
 {% load i18n %}
+{%trans "Sign up" as subtitle%}
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>DiaryTrove | {%trans "Sign up"%}</title>
-    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
-</head>
+{%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-    <header>
-        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "Sign up"%}</b></p>
-        <div id="headerfill"></div>
-        <div id="buttonrow">
-            <a href="{%url 'login'%}">{%trans "Log in"%}</a>
-            <a href="{%url 'index'%}">{%trans "Back to index"%}</a>
+{%include "diarytrove/subtemplates/header.html" with button_login=True button_index=True%}
+
+<main>
+    {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
+    <form action="{%url 'signup'%}" method="post" id="smallform">
+        {% csrf_token %}
+        <div id="formcontent">
+            {{form}}
         </div>
-    </header>
+        <div id="conditions">
+            <label for="accept_conditions"><a href="{%url 'conditions'%}" target="_blank">{% trans "I accept the terms and conditions:" %}</a></label>
+            <input type="checkbox" name="accept_conditions" required>
+        </div>
+        <input type="submit" value="{%trans 'Sign up'%}">
+    </form>
+    <br>
+    <p id="passwordsecurity">Concerned about your password security? <a href="{%url 'passwords'%}" target="_blank">Learn how we securely store them here!</a></p>
+</main>
 
-    <main>
-        {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
-        <form action="{%url 'signup'%}" method="post" id="smallform">
-            {% csrf_token %}
-            <div id="formcontent">
-                {{form}}
-            </div>
-            <div id="conditions">
-                <label for="accept_conditions"><a href="{%url 'conditions'%}" target="_blank">{% trans "I accept the terms and conditions:" %}</a></label>
-                <input type="checkbox" name="accept_conditions" required>
-            </div>
-            <input type="submit" value="{%trans 'Sign up'%}">
-        </form>
-        <br>
-        <p id="passwordsecurity">Concerned about your password security? <a href="{%url 'passwords'%}" target="_blank">Learn how we securely store them here!</a></p>
-    </main>
+{%include "diarytrove/subtemplates/footer.html"%}
 
-    {%include "diarytrove/footer.html"%}
-
-    <script type="text/javascript">var can_exit = false;</script>
-    <script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
+<script type="text/javascript">var can_exit = false;</script>
+<script src="{% static 'diarytrove/js/exitwarn.js' %}"></script>
 </body>
 </html>

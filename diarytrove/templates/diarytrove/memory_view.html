@@ -1,75 +1,62 @@
 {% load static %}
 {% load i18n %}
+{%trans "View Memory" as subtitle%}
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>DiaryTrove | {%trans "View Memory"%}</title>
-    <link rel="stylesheet" href="{%static 'diarytrove/css/style.css'%}">
-    <link rel="shortcut icon" type="image/png" href="{% static 'diarytrove/assets/favicon.png' %}">
-</head>
+{%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-    <header>
-        <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a> | {%trans "View Memory"%}</b></p>
-        <div id="headerfill"></div>
-        <div id="buttonrow">
-            <a href="{%url 'memory_create'%}">{%trans "Create Memory"%}</a>
-            <a href="{%url 'home'%}">{%trans "Home"%}</a>
-        </div>
-    </header>
+{%include "diarytrove/subtemplates/header.html" with button_create=True button_home=True%}
 
-    <main>
-        <div id="memory-header">
-            <p id="mood-emoji">{{mood_emoji}}</p>
-            <div id="title-date">
-                <h1>{{memory.title}}</h1>
-                <p id="datetime"><i>{{memory.date}}</i></p>
+<main>
+    <div id="memory-header">
+        <p id="mood-emoji">{{mood_emoji}}</p>
+        <div id="title-date">
+            <h1>{{memory.title}}</h1>
+            <p id="datetime"><i>{{memory.date}}</i></p>
+        </div>
+    </div>
+    <div class="line"></div>
+    <p id="memory-content">
+        {%for paragraph in content%}
+            {%if forloop.counter > 1%}<br>{%endif%}
+            {{paragraph}}
+        {%endfor%}
+    </p>
+    <div class="line"></div>
+
+    <ul id="file-list">
+        {%for media in media_data%}
+        <li>
+            <a class="open-media" href="{%url 'memory_media_view' memory.pk media.pk%}" target="_blank">
+                <img src="{%static 'diarytrove/assets/external.svg'%}">
+            </a>
+            <div class="media-preview">
+                {%if media.type == "image"%}
+                    <img class="preview-image" src="{%url 'memory_media_view' memory.pk media.pk%}">
+                {%elif media.type == "video"%}
+                    <video class="preview-video" controls>
+                        <source src="{%url 'memory_media_view' memory.pk media.pk%}" type="{{media.mimetype}}" preload="metadata">
+                        {%trans "Your browser does not support the video tag."%}
+                    </video>
+                {%elif media.type == "audio"%}
+                    <audio class="preview-audio" controls>
+                        <source src="{%url 'memory_media_view' memory.pk media.pk%}" type="{{media.mimetype}}">
+                        {%trans "Your browser does not support the audio element."%}
+                    </audio>
+                {%else%}
+                    <img class="preview-file" src="{%static 'diarytrove/assets/file.svg'%}">
+                {%endif%}
             </div>
-        </div>
-        <div class="line"></div>
-        <p id="memory-content">
-            {%for paragraph in content%}
-                {%if forloop.counter > 1%}<br>{%endif%}
-                {{paragraph}}
-            {%endfor%}
-        </p>
-        <div class="line"></div>
+            <div class="metadata">
+                <p>{{media.filename}}</p>
+            </div>
+        </li>
+        {%endfor%}
+    </ul>
+</main>
 
-        <ul id="file-list">
-            {%for media in media_data%}
-            <li>
-                <a class="open-media" href="{%url 'memory_media_view' memory.pk media.pk%}" target="_blank">
-                    <img src="{%static 'diarytrove/assets/external.svg'%}">
-                </a>
-                <div class="media-preview">
-                    {%if media.type == "image"%}
-                        <img class="preview-image" src="{%url 'memory_media_view' memory.pk media.pk%}">
-                    {%elif media.type == "video"%}
-                        <video class="preview-video" controls>
-                            <source src="{%url 'memory_media_view' memory.pk media.pk%}" type="{{media.mimetype}}" preload="metadata">
-                            {%trans "Your browser does not support the video tag."%}
-                        </video>
-                    {%elif media.type == "audio"%}
-                        <audio class="preview-audio" controls>
-                            <source src="{%url 'memory_media_view' memory.pk media.pk%}" type="{{media.mimetype}}">
-                            {%trans "Your browser does not support the audio element."%}
-                        </audio>
-                    {%else%}
-                        <img class="preview-file" src="{%static 'diarytrove/assets/file.svg'%}">
-                    {%endif%}
-                </div>
-                <div class="metadata">
-                    <p>{{media.filename}}</p>
-                </div>
-            </li>
-            {%endfor%}
-        </ul>
-    </main>
-    
-    {%include "diarytrove/footer.html"%}
-
-    <script src="{% url 'javascript-catalog' %}"></script>
+{%include "diarytrove/subtemplates/footer.html"%}
 </body>
 </html>

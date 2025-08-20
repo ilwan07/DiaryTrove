@@ -1,0 +1,18 @@
+{% load static %}
+{% load i18n %}
+
+<header>
+    <p id="title"><b><a href="{%url 'home'%}">DiaryTrove</a>{%if subtitle%} | {{subtitle}}{%endif%}</b></p>
+    <div id="headerfill"></div>
+    <div id="buttonrow">
+        {%if button_create%}<a href="{%url 'memory_create'%}">{%trans "Create Memory"%}</a>{%endif%}
+        {%if button_gallery%}<a href="{%url 'gallery'%}">{%trans "Gallery"%}</a>{%endif%}
+        {%if button_preferences%}<a href="{%url 'preferences'%}">{%trans "Preferences"%}</a>{%endif%}
+        {%if button_admin and user.is_staff%}<a href="{% url 'admin:index' %}" target="_blank">{%trans "Admin access"%}</a>{%endif%}
+        {%if button_home%}<a href="{%url 'home'%}">{%trans "Home"%}</a>{%endif%}
+        {%if button_logout%}<a href="{%url 'logout'%}">{%trans "Log out"%}</a>{%endif%}
+        {%if button_login%}<a href="{%url 'login'%}">{%trans "Log in"%}</a>{%endif%}
+        {%if button_signup%}<a href="{%url 'signup'%}">{%trans "Sign up"%}</a>{%endif%}
+        {%if button_index%}<a href="{%url 'index'%}">{%trans "Back to Index"%}</a>{%endif%}
+    </div>
+</header>
