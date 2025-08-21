@@ -10,7 +10,12 @@
 {%include "diarytrove/subtemplates/header.html" with button_create=True button_home=True%}
 
 <main>
-    
+    <!-- TODO: Search bar -->
+    <div id=memories-previews>
+        {%for memory in memories%}
+            {%include "diarytrove/subtemplates/memory_preview.html"%}
+        {%endfor%}
+    </div>
 </main>
 
 {%include "diarytrove/subtemplates/footer.html"%}

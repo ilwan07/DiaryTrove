@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib import admin
 from django.utils import timezone
 
 from .storage import PrivateMediaStorage
@@ -49,6 +50,14 @@ class Memory(models.Model):
     content = models.TextField(_("Content of the memory"))
     mood = models.IntegerField(_("Mood for the memory"), choices=MOODS)
     mail_sent = models.BooleanField(_("Was it already sent"), default=False)
+
+    @admin.display(description=_("Unlocked"), boolean=True)
+    def is_unlocked(self) -> bool:
+        """
+        Checks if the memory is locked
+        """
+        resolved_lock_time = self.lock_time if self.lock_time > 0 else self.owner.profile.lock_time
+        return self.date + timezone.timedelta(days=resolved_lock_time) <= timezone.now()
 
     def __str__(self):
         return f"{str(self.title)} ({self.pk})"

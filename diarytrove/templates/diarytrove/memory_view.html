@@ -7,7 +7,7 @@
 {%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-{%include "diarytrove/subtemplates/header.html" with button_create=True button_home=True%}
+{%include "diarytrove/subtemplates/header.html" with button_create=True button_gallery=True button_home=True%}
 
 <main>
     <div id="memory-header">
@@ -24,11 +24,12 @@
             {{paragraph}}
         {%endfor%}
     </p>
-    <div class="line"></div>
 
+    {%if media_data%}
+    <div class="line"></div>
     <ul id="file-list">
         {%for media in media_data%}
-        <li>
+        <li {%if forloop.counter == 1%}class="first-file"{%endif%}>
             <a class="open-media" href="{%url 'memory_media_view' memory.pk media.pk%}" target="_blank">
                 <img src="{%static 'diarytrove/assets/external.svg'%}">
             </a>
@@ -55,6 +56,7 @@
         </li>
         {%endfor%}
     </ul>
+    {%endif%}
 </main>
 
 {%include "diarytrove/subtemplates/footer.html"%}

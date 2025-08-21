@@ -120,8 +120,8 @@ def auth_login(request:HttpRequest):
                 else:
                     # Log the user in then redirect
                     login(request, user)
-                    if "next" in request.POST:
-                        return redirect(request.POST["next"])
+                    if "next" in request.POST and request.POST.get("next", "").startswith("/"):  # Only redirect on this site
+                        return redirect(request.POST.get("next", "home"))
                     else:
                         return redirect("home")
         
@@ -238,8 +238,30 @@ def gallery(request:HttpRequest):
     """
     A gallery to browse unlocked memories
     """
-    #TODO: get required context elements
-    return render(request, "diarytrove/gallery.html",  {})
+    MAX_CONTENT_CHARS = 1000
+    MAX_TITLE_CHARS = 120
+    memories = []
+    for memory in request.user.memory_set.all().order_by("-date"):
+        if memory.is_unlocked():
+            title = memory.title.strip()
+            mood_emoji = memory.MOODS[memory.mood-1][1]
+            content = memory.content.strip().replace("\n", " ")
+            if len(title) > MAX_TITLE_CHARS:
+                title = title[:MAX_TITLE_CHARS] + "..."
+            if len(content) > MAX_CONTENT_CHARS:
+                content = content[:MAX_CONTENT_CHARS] + "..."
+            
+            mediaset = memory.memorymedia_set.all()
+            for media in mediaset:
+                if memory_media_mimetype(media).startswith("image/"):
+                    image_pk = media.pk
+                    break
+            else:  # If no image for the memory
+                image_pk = None
+            memories.append({"pk": memory.pk, "title": title, "date": memory.date,
+                             "mood_emoji": mood_emoji, "content": content, "image_pk": image_pk})
+    
+    return render(request, "diarytrove/gallery.html",  {"memories": memories})
 
 
 @login_required
@@ -266,14 +288,14 @@ def memory_create(request:HttpRequest):
             return JsonResponse({"success": False, "error": _("Some required fields are missing.")}, status=400)
         
         title = request.POST["title"]
-        content = (request.POST["content"])
+        content = request.POST["content"]
         lock_time = request.POST["lock_time"]
         mood = request.POST["mood"]
         
         # Validate the data
         if not title or not content:
             return JsonResponse({"success": False, "error": _("Title and content cannot be empty.")}, status=400)
-        if len(title) > 255:
+        if len(str(title)) > 255:
             return JsonResponse({"success": False, "error": _("Title cannot be longer than 255 characters.")}, status=400)
         if not profile.editable_lock_time:
             lock_time = 0  # Don't allow lock time modification if it's specified in the preferences
@@ -312,8 +334,7 @@ def memory_create(request:HttpRequest):
                                 status=400)
 
         # Create the memory object
-        memory = Memory(owner=request.user, date=timezone.now(), lock_time=lock_time,
-                        title=title, content=str(content).strip(), mood=mood)
+        memory = Memory(owner=request.user, lock_time=lock_time, title=str(title).strip(), content=str(content).strip(), mood=mood)
         memory.save()
 
         # Update the last memory creation date

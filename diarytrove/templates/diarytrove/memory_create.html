@@ -7,7 +7,7 @@
 {%include "diarytrove/subtemplates/head.html"%}
 
 <body>
-{%include "diarytrove/subtemplates/header.html" with button_home=True%}
+{%include "diarytrove/subtemplates/header.html" with button_gallery=True button_home=True%}
 
 <main>
     <form id="upload-form" method="post" action="{%url 'memory_create'%}">

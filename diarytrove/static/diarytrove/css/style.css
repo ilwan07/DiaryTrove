@@ -19,7 +19,9 @@ a {
 header {
     background-color: skyblue;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
+    gap: 0.5rem;
     min-width: 100vw;
     align-items: center;
 }
@@ -136,6 +138,7 @@ form #formcontent button {
 textarea {
     resize: vertical;
     min-height: 5rem;
+    max-height: 35rem;
 }
 
 form #formcontent textarea, form #formcontent input:not([type="checkbox"]):not([type="number"]) {
@@ -283,6 +286,10 @@ a img.ext-inline {
     padding-bottom: 1rem;
 }
 
+#file-list li.first-file {
+    border-top: none !important;
+}
+
 .preview-image, .preview-video, .preview-audio {
     width: 35rem;
 }
@@ -335,4 +342,46 @@ a.open-media img {
     margin-right: 1rem;
     padding: 0.5rem;
     width: 3rem;
+}
+
+.preview-link {
+    text-decoration: none !important;
+}
+
+.memory-preview {
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+    border: 3px solid #55c1ef;
+    border-radius: 1.8rem;
+}
+
+.memory-preview .preview-header {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+}
+
+.memory-preview .preview-emoji {
+    font-size: 2.6rem;
+    margin-right: 0.5rem;
+}
+
+.memory-preview .preview-body {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+}
+
+.memory-preview .preview-content {
+    font-size: 1.18rem;
+    text-align: justify;
+    flex-grow: 1;
+}
+
+.memory-preview .preview-img {
+    border-radius: 2rem;
+    flex-shrink: 0;
+    max-width: 18rem;
+    max-height: 15rem;
+    margin-left: 0.5rem;
 }

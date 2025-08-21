@@ -1,6 +1,21 @@
 {% load static %}
 {% load i18n %}
 
+<a class="preview-link" href="{%url 'memory_view' memory.pk%}">
 <div class="memory-preview">
-    
+    <div class="preview-header">
+        <p class="preview-emoji">{{memory.mood_emoji}}</p>
+        <div class="preview-title-div">
+            <h2 class="preview-title">{{memory.title}}</h2>
+            <p class="preview-datetime"><i>{{memory.date}}</i></p>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="preview-body">
+        <p class="preview-content">{{memory.content}}</p>
+        {%if memory.image_pk%}
+        <img class="preview-img" src="{%url 'memory_media_view' memory.pk memory.image_pk%}">
+        {%endif%}
+    </div>
 </div>
+</a>
