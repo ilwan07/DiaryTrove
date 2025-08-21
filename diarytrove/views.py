@@ -240,8 +240,19 @@ def gallery(request:HttpRequest):
     """
     MAX_CONTENT_CHARS = 1000
     MAX_TITLE_CHARS = 120
+    
+    all_memories = request.user.memory_set.all().order_by("-date")
+    if "s" in request.GET:
+        query = request.GET.get("s", "").strip().lower()
+        wanted_memories = []
+        for memory in all_memories:
+            if query in str(memory.title).lower() or query in str(memory.content).lower():
+                wanted_memories.append(memory)
+    else:
+        wanted_memories = all_memories
+    
     memories = []
-    for memory in request.user.memory_set.all().order_by("-date"):
+    for memory in wanted_memories:
         if memory.is_unlocked():
             title = memory.title.strip()
             mood_emoji = memory.MOODS[memory.mood-1][1]

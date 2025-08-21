@@ -12,7 +12,7 @@
 <main>
     {%if error%}<p id="error"><b>{{error}}</b></p><br>{%endif%}
     <form action="{%url 'signup'%}" method="post" id="smallform">
-        {% csrf_token %}
+        {%csrf_token%}
         <div id="formcontent">
             {{form}}
         </div>

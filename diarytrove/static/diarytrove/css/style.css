@@ -187,7 +187,7 @@ input[type="checkbox"] {
 }
 
 
-form input[type="submit"] {
+form input[type="submit"]:not(#submit-search) {
     transition: 0.2s;
     font-size: 1.2rem;
     margin-top: 1rem;
@@ -197,7 +197,7 @@ form input[type="submit"] {
     cursor: pointer;
 }
 
-form input[type="submit"]:hover {
+form input[type="submit"]:not(#submit-search):hover {
     transition: 0.2s;
     padding: 0.6rem;
 }
@@ -384,4 +384,33 @@ a.open-media img {
     max-width: 18rem;
     max-height: 15rem;
     margin-left: 0.5rem;
+}
+
+#search-form {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+}
+
+#search-form #searchbar {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.3rem;
+    margin-right: 0.5rem;
+    border: 1.5px solid #55c1ef;
+    border-radius: 8px;
+}
+
+#search-form #submit-search {
+    font-size: 1.1rem;
+    padding: 0.4rem;
+    border: 1.5px solid #55c1ef;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#search-query {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    text-align: justify;
 }
