@@ -12,9 +12,10 @@ from django.utils.translation import gettext as _
 
 from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .utils import needs_profile, memory_media_mimetype, private_media_response
+from .utils import needs_profile, memory_media_mimetype, private_media_response, memory_to_dict
 
 from pathlib import Path
+import random
 import os
 
 
@@ -229,8 +230,16 @@ def home(request:HttpRequest):
     The user's home page
     """
     user = request.user
+    latest_memory, random_memory = None, None
+    unlocked_memories = [memory for memory in user.memory_set.all().order_by("-date") if memory.is_unlocked()]
+    
+    if len(unlocked_memories) >= 1:
+        latest_memory = memory_to_dict(unlocked_memories.pop(0))
+    if len(unlocked_memories) >= 2:
+        random_memory = memory_to_dict(random.choice(unlocked_memories))
 
-    return render(request, "diarytrove/home.html", {"user": user})
+    return render(request, "diarytrove/home.html",
+                  {"user": user, "latest_memory": latest_memory, "random_memory": random_memory})
 
 
 @login_required
@@ -238,9 +247,6 @@ def gallery(request:HttpRequest):
     """
     A gallery to browse unlocked memories
     """
-    MAX_CONTENT_CHARS = 1000
-    MAX_TITLE_CHARS = 120
-    
     all_memories = request.user.memory_set.all().order_by("-date")
     if "s" in request.GET:
         query = request.GET.get("s", "").strip().lower()
@@ -254,23 +260,7 @@ def gallery(request:HttpRequest):
     memories = []
     for memory in wanted_memories:
         if memory.is_unlocked():
-            title = memory.title.strip()
-            mood_emoji = memory.MOODS[memory.mood-1][1]
-            content = memory.content.strip().replace("\n", " ")
-            if len(title) > MAX_TITLE_CHARS:
-                title = title[:MAX_TITLE_CHARS] + "..."
-            if len(content) > MAX_CONTENT_CHARS:
-                content = content[:MAX_CONTENT_CHARS] + "..."
-            
-            mediaset = memory.memorymedia_set.all()
-            for media in mediaset:
-                if memory_media_mimetype(media).startswith("image/"):
-                    image_pk = media.pk
-                    break
-            else:  # If no image for the memory
-                image_pk = None
-            memories.append({"pk": memory.pk, "title": title, "date": memory.date,
-                             "mood_emoji": mood_emoji, "content": content, "image_pk": image_pk})
+            memories.append(memory_to_dict(memory))
     
     return render(request, "diarytrove/gallery.html",  {"memories": memories})
 

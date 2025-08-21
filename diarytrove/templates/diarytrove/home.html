@@ -14,6 +14,16 @@
         <a href="{%url 'memory_create'%}"><b>{%trans "Create new memory"%}</b></a>
         <a href="{%url 'gallery'%}"><b>{%trans "See memory gallery"%}</b></a>
     </div>
+
+    {%if latest_memory%}
+        <div class="line"></div>
+        <h2>{%trans "Latest memory"%}</h2>
+        {%include "diarytrove/subtemplates/memory_preview.html" with memory=latest_memory%}
+    {%endif%}
+    {%if random_memory%}
+        <h2>{%trans "Random memory"%}</h2>
+        {%include "diarytrove/subtemplates/memory_preview.html" with memory=random_memory%}
+    {%endif%}
 </main>
 
 {%include "diarytrove/subtemplates/footer.html"%}

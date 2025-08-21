@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import HttpRequest, HttpResponse, Http404, FileResponse
 from django.contrib.auth.models import User
 
-from .models import Profile, MemoryMedia
+from .models import Profile, Memory, MemoryMedia
 
 from pathlib import Path
 from mimetypes import guess_type
@@ -23,7 +23,7 @@ def check_profiles(user:User=None):
             profile.save()
 
 
-def needs_profile(func):
+def needs_profile(func) -> callable:
     """
     Decorator to ensures the request user has a profile
     Profile may be missing if the user was created manually
@@ -36,7 +36,7 @@ def needs_profile(func):
     return wrapper
 
 
-def safe_join(root:Path, *paths):
+def safe_join(root:Path, *paths) -> Path:
     """
     Join paths while protecting against directory transversal attacks
     """
@@ -46,7 +46,7 @@ def safe_join(root:Path, *paths):
     return final
 
 
-def private_media_response(request:HttpRequest, file_path:Path):
+def private_media_response(request:HttpRequest, file_path:Path) -> HttpResponse:
     """
     Get a private media file as a file response, only call internally
     Ownership verification must be passed before calling this function
@@ -77,7 +77,7 @@ def private_media_response(request:HttpRequest, file_path:Path):
     return response
 
 
-def memory_media_mimetype(memory_media:MemoryMedia):
+def memory_media_mimetype(memory_media:MemoryMedia) -> str:
     """
     Get the mimetype of a memory media object
     """
@@ -85,3 +85,30 @@ def memory_media_mimetype(memory_media:MemoryMedia):
     if ctype is None:
         return "application/octet-stream"  # Default to binary if no type is found
     return ctype
+
+
+def memory_to_dict(memory:Memory) -> dict:
+    """
+    Creates a dict with all the needed information for a memory preview tile
+    """
+    MAX_CONTENT_CHARS = 1000
+    MAX_TITLE_CHARS = 120
+
+    title = memory.title.strip()
+    mood_emoji = memory.MOODS[memory.mood-1][1]
+    content = memory.content.strip().replace("\n", " ")
+    if len(title) > MAX_TITLE_CHARS:
+        title = title[:MAX_TITLE_CHARS] + "..."
+    if len(content) > MAX_CONTENT_CHARS:
+        content = content[:MAX_CONTENT_CHARS] + "..."
+
+    mediaset = memory.memorymedia_set.all()
+    for media in mediaset:
+        if memory_media_mimetype(media).startswith("image/"):
+            image_pk = media.pk
+            break
+    else:  # If no image for the memory
+        image_pk = None
+    
+    return {"pk": memory.pk, "title": title, "date": memory.date,
+            "mood_emoji": mood_emoji, "content": content, "image_pk": image_pk}
