@@ -73,7 +73,7 @@ def auth_signup(request:HttpRequest):
                     profile = Profile(user=user, language=language)
                     profile.save()
                     login(request, user)
-                    send_email(user.email, "welcome", "Welcome to DiaryTrove!", {"user": user})
+                    send_email(user, "welcome", "Welcome to DiaryTrove!")
                     return redirect("preferences")
 
         else:
@@ -219,6 +219,7 @@ def preferences(request:HttpRequest):
         form.fields["lock_time"].initial = profile.lock_time
         form.fields["mail_reminder"].initial = profile.mail_reminder
         form.fields["mail_memory"].initial = profile.mail_memory
+        form.fields["language"].initial = profile.language
         form.fields["mail_newsletter"].initial = profile.mail_newsletter
     
     return render(request, "diarytrove/preferences.html", {"form": form, "error":error_message, "editable":profile.editable_lock_time})
@@ -231,6 +232,7 @@ def home(request:HttpRequest):
     The user's home page
     """
     user = request.user
+    send_email(user, "welcome", "Welcome to DiaryTrove!")  #TODO: REMOVE
     latest_memory, random_memory = None, None
     unlocked_memories = [memory for memory in user.memory_set.all().order_by("-date") if memory.is_unlocked()]
     
