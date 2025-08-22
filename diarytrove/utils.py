@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, Http404, FileResponse
+from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 
 from .models import Profile, Memory, MemoryMedia
 
 from pathlib import Path
+from threading import Thread
 from mimetypes import guess_type
 
 def check_profiles(user:User=None):
@@ -112,3 +115,21 @@ def memory_to_dict(memory:Memory) -> dict:
     
     return {"pk": memory.pk, "title": title, "date": memory.date,
             "mood_emoji": mood_emoji, "content": content, "image_pk": image_pk}
+
+
+def send_email(receiver:str, template:str, subject:str, context:dict={}, sender:str=settings.DEFAULT_FROM_EMAIL):
+    """
+    Send an email to a single person within a thread by providing the templates directory
+    The template directory is under the emails directory, and contains content.txt and content.html
+    """
+    def send_email_thread():
+        text_content = render_to_string(f"diarytrove/emails/{template}/content.txt", context=context)
+        html_content = render_to_string(f"diarytrove/emails/{template}/content.html", context=context)
+        email = EmailMultiAlternatives(subject, text_content, sender, [receiver])
+        if html_content is not None:
+            email.attach_alternative(html_content, "text/html")
+        email.send()
+
+    email_thread = Thread(target=send_email_thread)
+    email_thread.daemon = True
+    email_thread.start()

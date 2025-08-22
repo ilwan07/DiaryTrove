@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 from .models import Profile, Memory, MemoryMedia
 from .forms import LoginForm, SignupForm, PreferencesForm
-from .utils import needs_profile, memory_media_mimetype, private_media_response, memory_to_dict
+from .utils import needs_profile, memory_media_mimetype, private_media_response, memory_to_dict, send_email
 
 from pathlib import Path
 import random
@@ -63,11 +63,17 @@ def auth_signup(request:HttpRequest):
                     error_message = " ".join(e.messages)
                 
                 else:
+                    # Get the preferred language
+                    language = request.POST.get("language", "en")
+                    if language not in [lang[0] for lang in Profile.AVAILABLE_LANGUAGES]:
+                        language = "en"
+                    
                     # Register the user and log in
                     user = User.objects.create_user(username, email, password)
-                    profile = Profile(user=user)
+                    profile = Profile(user=user, language=language)
                     profile.save()
                     login(request, user)
+                    send_email(user.email, "welcome", "Welcome to DiaryTrove!", {"user": user})
                     return redirect("preferences")
 
         else:
@@ -185,6 +191,7 @@ def preferences(request:HttpRequest):
             mail_reminder = form.cleaned_data["mail_reminder"]
             mail_memory = form.cleaned_data["mail_memory"]
             mail_newsletter = form.cleaned_data["mail_newsletter"]
+            language = form.cleaned_data["language"]
 
             if profile.editable_lock_time:
                 profile.lock_time = lock_time
@@ -193,18 +200,12 @@ def preferences(request:HttpRequest):
             if not editable_lock_time:
                 profile.editable_lock_time = False
             
-            try:
-                mail_memory = int(mail_memory)
-            except ValueError:
-                error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
-            else:
-                if not Profile.EMAIL_MEMORIES[0][0] <= mail_memory <= Profile.EMAIL_MEMORIES[-1][0]:
-                    error_message = _("The value for when to send memories by email is invalid, pick a valid option.")
-                else:
-                    profile.mail_reminder = mail_reminder
-                    profile.mail_newsletter = mail_newsletter
-                    profile.save()
-                    return redirect("home")
+            profile.mail_reminder = mail_reminder
+            profile.mail_memory = int(mail_memory)
+            profile.language = language
+            profile.mail_newsletter = mail_newsletter
+            profile.save()
+            error_message = _("Preferences saved successfully!")
         
         else:
             # Properly display the error for an invalid form

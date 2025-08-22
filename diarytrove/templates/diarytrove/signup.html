@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {%trans "Sign up" as subtitle%}
+{%get_current_language as LANGUAGE_CODE%}
 
 <!DOCTYPE html>
 <html>
@@ -20,6 +21,7 @@
             <label for="accept_conditions"><a href="{%url 'conditions'%}" target="_blank">{% trans "I accept the terms and conditions:" %}</a></label>
             <input type="checkbox" name="accept_conditions" required>
         </div>
+        <input type="hidden" name="language" value="{{LANGUAGE_CODE}}">
         <input type="submit" value="{%trans 'Sign up'%}">
     </form>
     <br>

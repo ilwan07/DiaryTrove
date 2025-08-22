@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from .models import Profile
+
 
 class LoginForm(forms.Form):
     username_email = forms.CharField(label=_("Username or email"), min_length=3, max_length=320)
@@ -19,6 +21,7 @@ class PreferencesForm(forms.Form):
     lock_time = forms.IntegerField(label=_("Memories lock time in days"), min_value=1, required=False)
     mail_reminder = forms.IntegerField(label=_("Email writing reminder delay in days"), min_value=0)
     mail_memory = forms.ChoiceField(label=_("When to send memories by email"),
-                                    choices=[(1, _("Always send")), (2, _("Only positive memories")), (3, _("Never send"))],
-                                    widget=forms.Select)
+                                    choices=Profile.EMAIL_MEMORIES, widget=forms.Select)
+    language = forms.ChoiceField(label=_("Email language"),
+                                 choices=Profile.AVAILABLE_LANGUAGES, widget=forms.Select)
     mail_newsletter = forms.BooleanField(label=_("Receive email newsletters"), required=False)

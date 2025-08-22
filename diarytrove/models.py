@@ -19,6 +19,7 @@ class Profile(models.Model):
         verbose_name_plural = _("profiles")
     
     EMAIL_MEMORIES = [(1, _("Always send")), (2, _("Only positive memories")), (3, _("Never send"))]
+    AVAILABLE_LANGUAGES = [("en", "English"), ("fr", "Français")]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     editable_lock_time = models.BooleanField(_("Can the lock time be edited"), default=True)
@@ -26,6 +27,7 @@ class Profile(models.Model):
     mail_reminder = models.IntegerField(_("Email writing reminder delay in days"), default=7)
     last_memory_date = models.DateTimeField(_("Date of the last memory"), default=timezone.now)  # For reminder emails
     mail_memory = models.IntegerField(_("When to send memories by email"), choices=EMAIL_MEMORIES, default=1)
+    language = models.CharField(_("Email language"), default="en")
     mail_newsletter = models.BooleanField(_("Receive email newsletters"), default=True)
 
     def __str__(self):
