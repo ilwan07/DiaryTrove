@@ -1,7 +1,8 @@
 from django.conf import settings
 
-def contact_email(request):
+def global_variables(request):
     """
-    Makes the contact email available to any template
+    Makes some variables available to any template
     """
-    return {'CONTACT_EMAIL': settings.CONTACT_EMAIL}
+    return {"CONTACT_EMAIL": settings.CONTACT_EMAIL,
+            "GITHUB_REPO": settings.GITHUB_REPO}

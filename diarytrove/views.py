@@ -232,7 +232,6 @@ def home(request:HttpRequest):
     The user's home page
     """
     user = request.user
-    send_email(user, "welcome", "Welcome to DiaryTrove!")  #TODO: REMOVE
     latest_memory, random_memory = None, None
     unlocked_memories = [memory for memory in user.memory_set.all().order_by("-date") if memory.is_unlocked()]
     

@@ -9,14 +9,15 @@
 <body>
 {%include "diarytrove/emails/header.html"%}
 
-<main>
+<div id="main">
     <p class="bigtext">
         {% blocktrans with username=user.username %}Hi {{username}}, and welcome to DiaryTrove!{% endblocktrans %}<br><br>
         {%trans "Thanks for creating you new account on our platform. You can now log in and use your account from any device using your credentials."%}<br>
-        {%trans "You can change your email preferences at any time in your "%}<a href="{{base_url}}{%url 'preferences'%}">{%trans "preferences page"%}.</a><br>
-        {%trans "Head to your "%}<a href="{{base_url}}{%url 'home'%}">{%trans "home page"%}</a>{%trans " to start using the app."%}
+        {%trans "You can change your email preferences at any time in your"%} <a href="{{base_url}}{%url 'preferences'%}">{%trans "preferences page"%}</a>.<br>
+        {%trans "Head to your"%} <a href="{{base_url}}{%url 'home'%}">{%trans "home page"%}</a> {%trans "to start using the app."%}<br>
+        {%trans "Create your first memory now and start building your online diary right now! Head to the"%} <a href="{{base_url}}{%url 'memory_create'%}">{%trans "memory creation page"%}</a> {%trans "to start."%}
     </p>
-</main>
+</div>
 
 {%include "diarytrove/emails/footer.html"%}
 </body>

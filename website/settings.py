@@ -33,6 +33,8 @@ WEB_DOMAIN = 'diarytrove.woah.pw' if not DEBUG else 'localhost:8000'  # The doma
 
 ALLOWED_HOSTS = [WEB_DOMAIN, 'localhost']
 
+GITHUB_REPO = "https://github.com/ilwan07/DiaryTrove/"
+
 
 # Application definition
 
@@ -69,7 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'diarytrove.context_processors.contact_email',
+                'diarytrove.context_processors.global_variables',
             ],
         },
     },

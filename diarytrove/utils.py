@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.utils import translation
 from django.http import HttpRequest, HttpResponse, Http404, FileResponse
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.staticfiles import finders
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 
@@ -10,6 +10,7 @@ from .models import Profile, Memory, MemoryMedia
 from pathlib import Path
 from threading import Thread
 from mimetypes import guess_type
+
 
 def check_profiles(user:User=None):
     """
@@ -126,15 +127,24 @@ def send_email(user:User, template:str, subject:str, context:dict={}, sender:str
     def send_email_thread():
         text_content = render_to_string(f"diarytrove/emails/{template}/content.txt", context=context)
         html_content = render_to_string(f"diarytrove/emails/{template}/content.html", context=context)
+        css_path = finders.find("diarytrove/css/emails.css")
+        if css_path:
+            with open(css_path, "r", encoding="utf-8") as css_file:
+                css = css_file.read()
+            html_content = html_content.replace("</head>", f"\n<style>\n{css}\n</style>\n</head>")
         email = EmailMultiAlternatives(subject, text_content, sender, [user.email])
         if html_content is not None:
             email.attach_alternative(html_content, "text/html")
         email.send()
 
     check_profiles(user)  # Ensures the user has a profile and therefore an email language
-    context["user"] = user
-    context["title"] = subject
-    context["base_url"] = f"{"https" if getattr(settings, "SECURE_SSL_REDIRECT", False) else "http"}://{settings.WEB_DOMAIN}"
+    context.update({
+        "user": user,
+        "title": subject,
+        "base_url": f"{'https' if getattr(settings, 'SECURE_SSL_REDIRECT', False) else 'http'}://{settings.WEB_DOMAIN}",
+        "CONTACT_EMAIL": settings.CONTACT_EMAIL,
+        "GITHUB_REPO": settings.GITHUB_REPO,
+    })
     email_thread = Thread(target=send_email_thread)
     email_thread.daemon = True
     email_thread.start()

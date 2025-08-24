@@ -1,0 +1,39 @@
+* {
+    margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+#header {
+    padding: 0.5rem;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+    background: linear-gradient(to right, transparent 0%, skyblue 1%, skyblue 99%, transparent 100%);
+    text-decoration: none !important;
+}
+
+#header * {
+    text-decoration: none !important;
+}
+
+#footer {
+    padding: 0.5rem;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+    background: linear-gradient(to right, transparent 0%, skyblue 1%, skyblue 99%, transparent 100%);
+    font-size: 0.9rem;
+}
+
+#main {
+    padding: 1.2rem;
+    padding-top: 0.5rem;
+    padding-bottom: 1.5rem;
+    background: linear-gradient(to right, transparent 0%, #e2f8ff 1%, #e2f8ff 99%, transparent 100%);
+}
+
+a {
+    color: black !important;
+}
+
+#main p {
+    font-size: 1.1rem;
+}
