@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -73,7 +73,8 @@ def auth_signup(request:HttpRequest):
                     profile = Profile(user=user, language=language)
                     profile.save()
                     login(request, user)
-                    send_email(user, "welcome", "Welcome to DiaryTrove!")
+                    with translation.override(language):
+                        send_email(user, "welcome", _("Welcome to DiaryTrove!"))
                     return redirect("preferences")
 
         else:

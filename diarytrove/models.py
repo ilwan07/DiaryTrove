@@ -51,7 +51,7 @@ class Memory(models.Model):
     title = models.CharField(_("Memory title"), max_length=255)
     content = models.TextField(_("Content of the memory"))
     mood = models.IntegerField(_("Mood for the memory"), choices=MOODS)
-    mail_sent = models.BooleanField(_("Was it already sent"), default=False)
+    mail_sent = models.BooleanField(_("Was it already sent"), default=False)  # Set to True even if it wasn't really sent because of preferences
 
     @admin.display(description=_("Unlocked"), boolean=True)
     def is_unlocked(self) -> bool:

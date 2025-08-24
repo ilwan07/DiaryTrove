@@ -1,6 +1,11 @@
 from django.apps import apps
 from django.conf import settings
+from django.utils import translation
 from django.db.models import FileField, ImageField
+from django.utils.translation import gettext as _
+
+from .models import Profile, Memory
+from .utils import send_email, check_profiles
 
 from threading import Thread
 from pathlib import Path
@@ -27,6 +32,7 @@ def jobs():
     Background job scheduler that runs scheduled tasks in threads
     """
     schedule.every(1).days.do(cleanup_private_media)
+    #schedule.every(20).minutes.do(send_memory_emails)  #TODO: uncomment once implemented
 
     while True:
         try:
@@ -134,3 +140,24 @@ def cleanup_private_media():
                     subfolder.rmdir()  # Remove empty subdirectory
                 except Exception:
                     print(f"Failed to remove empty subfolder {subfolder}")
+
+
+def send_memory_emails():
+    """
+    Check for newly unlocked memories and send emails accordingly
+    """
+    # Get memories which can eventually be sent by email
+    unsent_memories = Memory.objects.filter(mail_sent=False)
+    memories:list[Memory] = [memory for memory in unsent_memories if memory.is_unlocked()]
+
+    for memory in memories:
+        # Check if the memory should be sent
+        check_profiles(memory.owner)
+        profile:Profile = memory.owner.profile
+        if profile.mail_memory == 1 or (profile.mail_memory == 2 and memory.mood in memory.POSITIVE_MOODS):
+            # Send the memory by email
+            with translation.override(profile.language):
+                send_email(memory.owner, "unlocked_memory", _("Diarytrove | A new memory was unlocked!"),
+                           {"memory": memory})  #TODO: Create template
+        memory.mail_sent = True
+        memory.save()
