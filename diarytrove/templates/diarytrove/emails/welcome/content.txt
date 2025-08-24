@@ -1,0 +1,7 @@
+{%load static%}{%load i18n%}{%language user.profile.language%}{%include "diarytrove/emails/header.txt"%}
+{%blocktrans with username=user.username%}Hi {{username}}, and welcome to DiaryTrove!{%endblocktrans%}
+{%trans "Thanks for creating you new account on our platform. You can now log in and use your account from any device using your credentials."%}
+{%trans "You can change your email preferences at any time in your preferences page:"%} {{base_url}}{%url 'preferences'%}
+{%trans "Head to your home page to start using the app:"%} {{base_url}}{%url 'home'%}
+{%trans "Create your first memory now and start building your online diary right now! Head to the memory creation page to start:"%} {{base_url}}{%url 'memory_create'%}
+{%include "diarytrove/emails/footer.txt"%}{%endlanguage%}

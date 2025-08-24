@@ -1,0 +1,3 @@
+{%load static%}{%load i18n%}
+{%trans "Have any question, or want to contact us? Send an email to"%} {{CONTACT_EMAIL}} {%trans "or direcly reply to this email."%}
+{%trans "Found any issue with our platform? Report it to our GitHub page:"%} {{GITHUB_REPO}}
