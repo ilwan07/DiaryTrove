@@ -5,7 +5,7 @@ from django.db.models import FileField, ImageField
 from django.utils.translation import gettext as _
 
 from .models import Profile, Memory
-from .utils import send_email, check_profiles
+from .utils import send_email, check_profiles, memory_media_mimetype, memory_preview_image
 
 from threading import Thread
 from pathlib import Path
@@ -32,7 +32,7 @@ def jobs():
     Background job scheduler that runs scheduled tasks in threads
     """
     schedule.every(1).days.do(cleanup_private_media)
-    #schedule.every(20).minutes.do(send_memory_emails)  #TODO: uncomment once implemented
+    schedule.every(20).minutes.do(send_memory_emails)
 
     while True:
         try:
@@ -155,9 +155,19 @@ def send_memory_emails():
         check_profiles(memory.owner)
         profile:Profile = memory.owner.profile
         if profile.mail_memory == 1 or (profile.mail_memory == 2 and memory.mood in memory.POSITIVE_MOODS):
+            context = {"memory": memory, "content": memory.content.strip().split("\n"),
+                       "mood_emoji": memory.MOODS[memory.mood-1][1]}
+            # Get image data if there's one
+            image = memory_preview_image(memory)
+            attachments = []
+            if image is not None:
+                image_abs_path = settings.PRIVATE_MEDIA_ROOT / Path(image.file.name)
+                image_name = image_abs_path.name
+                context["image_name"] = image_name
+                attachments.append(image_abs_path)
+
             # Send the memory by email
-            with translation.override(profile.language):
-                send_email(memory.owner, "unlocked_memory", _("Diarytrove | A new memory was unlocked!"),
-                           {"memory": memory})  #TODO: Create template
+            with translation.override(memory.owner.profile.language):
+                send_email(memory.owner, "unlocked_memory", _("A new memory was unlocked!"), context, attachments=attachments)
         memory.mail_sent = True
         memory.save()

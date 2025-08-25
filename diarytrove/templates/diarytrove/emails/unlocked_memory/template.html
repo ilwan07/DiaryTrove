@@ -1,0 +1,44 @@
+{%load static%}
+{%load i18n%}
+{%language user.profile.language%}
+
+<!DOCTYPE html>
+<html>
+{%include "diarytrove/emails/head.html"%}
+
+<body>
+{%include "diarytrove/emails/header.html"%}
+
+<div id="main">
+    <p><b>
+        {%blocktrans with delay=memory.lock_time pluralize=memory.lock_time|pluralize%}Hey! One of your memories from {{delay}} day{{pluralize}} ago just unlocked!{%endblocktrans%}<br>
+        {%trans "You can have a better view at the memory and see all the associated media files on the"%} <a href="{{base_url}}{%url 'memory_view' memory.pk%}">{%trans "memory page"%}</a>.
+    </b></p>
+    <div class="line"></div>
+    
+    <div id="memory-header">
+        <p id="mood-emoji">{{mood_emoji}}</p>
+        <div id="title-date">
+            <h1>{{memory.title}}</h1>
+            <p id="datetime"><i>{{memory.date}}</i></p>
+        </div>
+    </div>
+    <div class="line"></div>
+
+    <p id="memory-content">
+        {%for paragraph in content%}
+            {%if forloop.counter > 1%}<br>{%endif%}
+            {{paragraph}}
+        {%endfor%}
+    </p>
+
+    {%if image_name%}
+        <div class="line"></div>
+        <img src="cid:{{image_name}}" id="memory-image">
+    {%endif%}
+</div>
+
+{%include "diarytrove/emails/footer.html"%}
+</body>
+</html>
+{%endlanguage%}

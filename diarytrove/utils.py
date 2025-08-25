@@ -9,7 +9,9 @@ from .models import Profile, Memory, MemoryMedia
 
 from pathlib import Path
 from threading import Thread
+from email.mime.image import MIMEImage
 from mimetypes import guess_type
+from functools import lru_cache
 
 
 def check_profiles(user:User=None):
@@ -107,26 +109,32 @@ def memory_to_dict(memory:Memory) -> dict:
     if len(content) > MAX_CONTENT_CHARS:
         content = content[:MAX_CONTENT_CHARS] + "..."
 
-    mediaset = memory.memorymedia_set.all()
-    for media in mediaset:
-        if memory_media_mimetype(media).startswith("image/"):
-            image_pk = media.pk
-            break
-    else:  # If no image for the memory
-        image_pk = None
+    image = memory_preview_image(memory)
+    image_pk = image.pk if image is not None else None
     
     return {"pk": memory.pk, "title": title, "date": memory.date,
             "mood_emoji": mood_emoji, "content": content, "image_pk": image_pk}
 
 
-def send_email(user:User, template:str, subject:str, context:dict={}, sender:str=settings.DEFAULT_FROM_EMAIL):
+def memory_preview_image(memory:Memory) -> MemoryMedia|None:
+    """
+    Gets the first image MemoryMedia for a memory, or None if there's no image
+    """
+    mediaset = memory.memorymedia_set.all()
+    for media in mediaset:
+        if memory_media_mimetype(media).startswith("image/"):
+            return media
+    return None
+
+
+def send_email(user:User, template:str, subject:str, context:dict={}, sender:str=settings.DEFAULT_FROM_EMAIL, attachments:list[Path]=[]):
     """
     Send an email to a user using a thread by providing the templates directory
-    The template directory is under the emails directory, and contains content.txt and content.html
+    The template directory is under the emails directory, and contains template.txt and template.html
     """
     def send_email_thread():
-        text_content = render_to_string(f"diarytrove/emails/{template}/content.txt", context=context)
-        html_content = render_to_string(f"diarytrove/emails/{template}/content.html", context=context)
+        text_content = render_to_string(f"diarytrove/emails/{template}/template.txt", context=context)
+        html_content = render_to_string(f"diarytrove/emails/{template}/template.html", context=context)
         css_path = finders.find("diarytrove/css/emails.css")
         if css_path:
             with open(css_path, "r", encoding="utf-8") as css_file:
@@ -135,6 +143,8 @@ def send_email(user:User, template:str, subject:str, context:dict={}, sender:str
         email = EmailMultiAlternatives(subject, text_content, sender, [user.email])
         if html_content is not None:
             email.attach_alternative(html_content, "text/html")
+        for attachment in attachments:
+            email.attach(file_data(attachment))
         email.send()
 
     check_profiles(user)  # Ensures the user has a profile and therefore an email language
@@ -148,3 +158,12 @@ def send_email(user:User, template:str, subject:str, context:dict={}, sender:str
     email_thread = Thread(target=send_email_thread)
     email_thread.daemon = True
     email_thread.start()
+
+
+@lru_cache()
+def file_data(file_path:Path):
+    with open(file_path, "rb") as f:
+        data = f.read()
+    file = MIMEImage(data)
+    file.add_header("Content-ID", f"<{file_path.name}>")
+    return file

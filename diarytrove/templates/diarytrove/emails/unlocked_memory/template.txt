@@ -1,0 +1,3 @@
+{%load static%}{%load i18n%}{%language user.profile.language%}{%include "diarytrove/emails/header.txt"%}
+
+{%include "diarytrove/emails/footer.txt"%}{%endlanguage%}
