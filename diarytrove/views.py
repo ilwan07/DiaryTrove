@@ -343,6 +343,7 @@ def memory_create(request:HttpRequest):
 
         # Update the last memory creation date
         profile.last_memory_date = timezone.now()
+        profile.save()
 
         for f in files:
             MemoryMedia.objects.create(memory=memory, file=f)
@@ -350,7 +351,7 @@ def memory_create(request:HttpRequest):
         # Return json for AJAX requests or redirect for normal requests
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"success": True, "redirect": reverse("home")})
-        return redirect("memory_view", memory.pk, {"profile": profile})
+        return redirect("home")
 
     # Give the page for GET requests
     return render(request, "diarytrove/memory_create.html", {"profile": request.user.profile,

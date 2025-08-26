@@ -161,9 +161,10 @@ def send_email(user:User, template:str, subject:str, context:dict={}, sender:str
 
 
 @lru_cache()
-def file_data(file_path:Path):
+def file_data(file_path:Path) -> MIMEImage:
     with open(file_path, "rb") as f:
         data = f.read()
     file = MIMEImage(data)
     file.add_header("Content-ID", f"<{file_path.name}>")
+    file.add_header("Content-Disposition", "attachment", filename=file_path.name)
     return file

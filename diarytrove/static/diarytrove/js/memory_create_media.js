@@ -210,7 +210,7 @@ form.addEventListener("submit", (ev) => {
                     document.querySelector("main").innerHTML = "<h1>" + gettext("Memory created successfully! You will be redirected shortly...") + "</h1>";
                     setTimeout(() => {
                         window.location = data.redirect;
-                    }, 2500);
+                    }, 2000);
                 return;
                 }
                 // Else reload

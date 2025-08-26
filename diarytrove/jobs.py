@@ -5,7 +5,7 @@ from django.db.models import FileField, ImageField
 from django.utils.translation import gettext as _
 
 from .models import Profile, Memory
-from .utils import send_email, check_profiles, memory_media_mimetype, memory_preview_image
+from .utils import send_email, check_profiles, memory_preview_image
 
 from threading import Thread
 from pathlib import Path
@@ -31,8 +31,8 @@ def jobs():
     """
     Background job scheduler that runs scheduled tasks in threads
     """
-    schedule.every(1).days.do(cleanup_private_media)
-    schedule.every(20).minutes.do(send_memory_emails)
+    schedule.every(6).hours.do(cleanup_private_media)
+    schedule.every(30).minutes.do(send_memory_emails)
 
     while True:
         try:
