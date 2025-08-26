@@ -26,6 +26,7 @@ class Profile(models.Model):
     lock_time = models.IntegerField(_("Memories lock time in days"), default=365)
     mail_reminder = models.IntegerField(_("Email writing reminder delay in days"), default=7)
     last_memory_date = models.DateTimeField(_("Date of the last memory"), default=timezone.now)  # For reminder emails
+    sent_writing_reminder = models.BooleanField(_("Was a writing reminder sent"), default=False)
     mail_memory = models.IntegerField(_("When to send memories by email"), choices=EMAIL_MEMORIES, default=1)
     language = models.CharField(_("Email language"), default="en")
     mail_newsletter = models.BooleanField(_("Receive email newsletters"), default=True)

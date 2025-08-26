@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.conf import settings
-from django.utils import translation
+from django.utils import translation, timezone
 from django.db.models import FileField, ImageField
 from django.utils.translation import gettext as _
 
@@ -32,6 +32,7 @@ def jobs():
     Background job scheduler that runs scheduled tasks in threads
     """
     schedule.every(6).hours.do(cleanup_private_media)
+    schedule.every(6).hours.do(send_writing_reminder_emails)
     schedule.every(30).minutes.do(send_memory_emails)
 
     while True:
@@ -168,6 +169,23 @@ def send_memory_emails():
 
             # Send the memory by email
             with translation.override(memory.owner.profile.language):
-                send_email(memory.owner, "unlocked_memory", _("A new memory was unlocked!"), context, attachments=attachments)
+                send_email(memory.owner, "unlocked_memory", _("One of your memories was just unlocked!"), context, attachments=attachments)
         memory.mail_sent = True
         memory.save()
+
+
+def send_writing_reminder_emails():
+    """
+    Send emails to remind users to write new memories if they haven't written any recently
+    """
+    profiles = Profile.objects.filter(mail_reminder__gt=0)  # Only profiles with reminders enabled
+    for profile in profiles:
+        if not profile.sent_writing_reminder:  # Only send if not already sent
+            days_since_last = (timezone.now() - profile.last_memory_date).days
+            if days_since_last >= profile.mail_reminder:
+                # Send reminder email
+                context = {"days": days_since_last}
+                with translation.override(profile.language):
+                    send_email(profile.user, "writing_reminder", _("Come write a new memory!"), context)
+                profile.sent_writing_reminder = True
+                profile.save()

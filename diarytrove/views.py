@@ -343,6 +343,7 @@ def memory_create(request:HttpRequest):
 
         # Update the last memory creation date
         profile.last_memory_date = timezone.now()
+        profile.sent_writing_reminder = False
         profile.save()
 
         for f in files:

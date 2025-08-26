@@ -63,3 +63,18 @@ a {
 #memory-image {
     width: 35rem;
 }
+
+.buttonlink {
+    transition: 0.2s !important;
+    font-size: 1.2rem;
+    text-decoration: none !important;
+    padding: 0.65rem;
+    border-radius: 8px;
+    background-color: skyblue;
+    border: 3px solid #10a9eb;
+}
+
+.buttonlink:hover {
+    transition: 0.2s !important;
+    background-color: #55c1ef;
+}

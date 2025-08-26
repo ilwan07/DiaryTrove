@@ -1,0 +1,6 @@
+{%load static%}{%load i18n%}{%language user.profile.language%}{%include "diarytrove/emails/header.txt"%}
+{%blocktrans with username=user.username days=days pluralize=days|pluralize%}Hi {{username}}, it's been {{days}} day{{pluralize}} since you wrote your last memory!{%endblocktrans%}
+{%trans "We just wanted to remind you to write a new memory and keep your diary up to date."%}
+{%trans "This way, you'll build up a huge collection of memories for your future self to read back!"%}
+{%trans "Head to your memory creation page to start writing!"%} {%trans "Create a new memory today:"%} {{base_url}}{%url 'memory_create'%}
+{%include "diarytrove/emails/footer.txt"%}{%endlanguage%}

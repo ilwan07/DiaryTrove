@@ -14,6 +14,7 @@ admin.site.index_title = _("Welcome to the DiaryTrove Administration Interface")
 class ProfileInLine(admin.TabularInline):
     model = Profile
     can_delete = False
+    fields = ["language", "editable_lock_time", "lock_time", "mail_memory", "mail_reminder", "mail_newsletter"]
 
 
 class MemoryInLine(admin.TabularInline):

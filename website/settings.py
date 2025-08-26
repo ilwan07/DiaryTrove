@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-WEB_DOMAIN = 'diarytrove.woah.pw' if not DEBUG else 'localhost:8000'  # The domain is the local machine in dev
+WEB_DOMAIN = os.getenv('WEB_DOMAIN') if not DEBUG else 'localhost:8000'  # The domain is the local machine in dev
 
 ALLOWED_HOSTS = [WEB_DOMAIN, 'localhost']
 
