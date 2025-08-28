@@ -144,7 +144,7 @@ STATIC_ROOT = Path('/var/www/diarytrove/static')
 # FOR PRODUCTION: use an adapted path, like the commented one
 
 #PRIVATE_MEDIA_ROOT = Path('/var/www/diarytrove/private_media')
-PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
+PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'  # Change to the above in production
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

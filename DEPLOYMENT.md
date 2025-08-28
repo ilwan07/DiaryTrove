@@ -24,21 +24,28 @@ Create the file with `nano .env` and fill it like this:
 
 ```bash
 DJANGO_SECRET_KEY = '[secret key here]'
+WEB_DOMAIN = '[domain name here]'
 EMAIL_HOST_USER = '[email address here]'
 EMAIL_HOST_PASSWORD = '[email password here]'
 ```
 
-Replace (without the square brackets) `[secret key here]` with the secret key you just generated, and replace `[email address here]` with the address of the email you wish to use and `[email password here]` by the app specific password for the email you wish to use to send notifications (leave it blank if you don't want to use emails, it shouldn't cause issues). For a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure.
+Replace (without the square brackets) `[secret key here]` with the secret key you just generated, `[domain name here]` with the domain you wish to host the website on, and replace  `[email address here]`with the address of the email you wish to use and `[email password here]` by the app specific password for the email you wish to use to send notifications (leave it blank if you don't want to use emails, it shouldn't cause issues). For a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure.
 
-Now, we need to edit the settings file. Still from the DiaryTrove folder, open it with `nano website/settings.py`, then change any settings you wish to edit, you have to change the followings: (TODO)
+Now, we need to edit the settings file. Still from the DiaryTrove folder, open it with `nano website/settings.py`, then change any settings you wish to edit, you have to change the followings:
 
-Disable debugging by changing to `DEBUG = False`, then put your own domain for the `WEB_DOMAIN` variable.
+Disable debugging by setting `DEBUG = False`, this will also indicate to the code that we're in a production environment.
 
-After that, go towards the end of the file, and in the email configuration section, change the variables to make your own email work (refer to the documentation of your email provider for specific configuration, don't change anything if you don't want to use emails, the authentiation will simply fail without raising blocking errors).
+Also change the `TIME_ZONE` variable to your own timezone.
+
+You can change the static files folder by editing the `STATIC_ROOT` variable. Then edit the PRIVATE_MEDIA_ROOT variable, by putting the commented one on top for example, to define the folder where to store private media files (make sure that folder is not exposed anywhere!).
+
+If you want to use another platform than gmail for emails, then change the `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` and `EMAIL_USE_SSL` variables according to your email provider's documentation.
+
+Adjust the `MAX_GLOBAL_MEDIA_SIZE` and `MAX_SUBMIT_MEDIA_SIZE` to define the maximum size of media uploads in total for the whole website, and for each memory submit respectively.
 
 Finally, enable SSL security by uncommenting each line under the `SECURITY FEATURES` section.
 
-Now, we need to prepare the database and the static files folder. While still in the ShortView directory with the venv activated, run `python manage.py makemigrations` then `python manage.py migrate` and finally `sudo mkdir /var/www/shortview` then `sudo .venv/bin/python manage.py collectstatic` (here we need to use sudo as the static files will get collected in a folder for which regular users don't have write permissions, we also need to indicate the full python path as the root user hasn't activated the venv).
+Now, we need to prepare the database, and the static and private media files folders. While still in the DiaryTrove directory with the venv activated, run `python manage.py makemigrations` then `python manage.py migrate` and then `sudo mkdir /var/www/diarytrove/static` (or the static folder of your choice) then `sudo .venv/bin/python manage.py collectstatic` (here we need to use sudo as the static files will get collected in a folder for which regular users don't have write permissions, we also need to indicate the full python path as the root user hasn't activated the venv), and finally `sudo mkdir /var/www/diarytrove/private_media` (or the private media folder of your choice).
 
 Create a superuser with `python manage.py createsuperuser` and fill in the required information, you will have to be logged in as this user to access the administrator interface, we recommend naming this user `admin`.
 
@@ -52,35 +59,35 @@ First, you need to get a domain or subdomain for the website. Then, in your doma
 
 If you're using a firewall on your server (such as `ufw`), then you need to allow those two ports (with `ufw`, you can execute `sudo ufw allow 'Nginx Full'` directly).
 
-We will now create a socket to listen for connections with `sudo nano /etc/systemd/system/shortview.socket` and fill it with the following content:
+We will now create a socket to listen for connections with `sudo nano /etc/systemd/system/diarytrove.socket` and fill it with the following content:
 
 ```ini
 [Unit]
-Description=shortview gunicorn socket
+Description=diarytrove gunicorn socket
 
 [Socket]
-ListenStream=/run/shortview.sock
+ListenStream=/run/diarytrove.sock
 
 [Install]
 WantedBy=sockets.target
 ```
 
-Now, we need to create the service itself which will run the server when a connection will occur, create and open it with `sudo nano /etc/systemd/system/shortview.service` and put the following in the file:
+Now, we need to create the service itself which will run the server when a connection will occur, create and open it with `sudo nano /etc/systemd/system/diarytrove.service` and put the following in the file:
 
 ```ini
 [Unit]
-Description=shortview gunicorn daemon
-Requires=shortview.socket
+Description=diarytrove gunicorn daemon
+Requires=diarytrove.socket
 After=network.target
 
 [Service]
 User=[your username]
 Group=www-data
-WorkingDirectory=/home/[your username]/ShortView
-ExecStart=/home/[your username]/ShortView/.venv/bin/gunicorn \
+WorkingDirectory=/home/[your username]/DiaryTrove
+ExecStart=/home/[your username]/DiaryTrove/.venv/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
-          --bind unix:/run/shortview.sock \
+          --bind unix:/run/diarytrove.sock \
           website.wsgi:application
 
 [Install]
@@ -89,13 +96,13 @@ WantedBy=multi-user.target
 
 By replacing (without the square brackets) `[your username]` by the username of the user which will run the webapp on your server, and eventually replace the `WorkingDirectory` and `ExecStart` paths if you did not clone the project in your home directory.
 
-Now, enable and start the socket with `sudo systemctl enable --now shortview.socket`.
+Now, enable and start the socket with `sudo systemctl enable --now diarytrove.socket`.
 
-If you make any change to the config afterward, run `sudo systemctl daemon-reload` then `sudo systemctl restart shortview` for the changes to take effect.
+If you make any change to the config afterward, run `sudo systemctl daemon-reload` then `sudo systemctl restart diarytrove` for the changes to take effect.
 
 ## Deploy with Nginx
 
-Now, create the Nginx config for this project with `sudo nano /etc/nginx/sites-available/shortview` and put this in the file:
+Now, create the Nginx config for this project with `sudo nano /etc/nginx/sites-available/diarytrove` and put this in the file:
 
 ```nginx
 server {
@@ -105,21 +112,29 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
 
     location /static/ {
-        alias /var/www/shortview/;
+        alias /var/www/diarytrove/static/;
+    }
+
+    location /internal_protected/ {
+        internal;
+        alias /var/www/diarytrove/private_media/;
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/run/shortview.sock;
+        proxy_pass http://unix:/run/diarytrove.sock;
     }
 }
 ```
 
-By replacing (without the square brackets) `[your domain]` by the domain or subdomain you are using for the webapp.
+By replacing (without the square brackets) `[your domain]` by the domain or subdomain you are using for the webapp, and eventually the `/static/` alias to your static folder.
 
-And now enable it with `sudo ln -s /etc/nginx/sites-available/shortview /etc/nginx/sites-enabled/` then test its syntax with `sudo nginx -t` and if everything is ok, then apply with `sudo systemctl restart nginx`.
+And now enable it with `sudo ln -s /etc/nginx/sites-available/diarytrove /etc/nginx/sites-enabled/` then test its syntax with `sudo nginx -t` and if everything is ok, then apply with `sudo systemctl restart nginx`.
 
-Finally, we need to add your user to a apecial group to avoid issues with serving static files, so execute `sudo gpasswd -a www-data [your username]` with your own username then `sudo nginx -s reload` to fix the issue.
+Finally, we need to add your user to a special group to avoid issues with serving static files, so execute `sudo gpasswd -a www-data [your username]` with your own username then `sudo nginx -s reload` to fix the issue.
 
 ## Get and enable your SSL certificate to get HTTPS
 
@@ -128,10 +143,6 @@ The last step will be to use an SSL certificate for the website to be secure. We
 First obtain your certificate by executing `sudo certbot --nginx -d [your domain]` with your own domain or subdomain. When prompted, enter your personal email address, accept the conditions, choose wether or not you want to receive promotional emails, and say yes if you're asked whether or not to redirect the HTTP traffic to HTTPS.
 
 The certificate should automatically be loaded in your server and the Nginx config will automatically be edited too. The certificate will automatically be renewed when necessary.
-
-### One last thing
-
-The last thing you need to do is to set your domain or subdomain in the websites administrator interface. For this, open your web browser and access the webapp with your domain, then log in as the superuser you created earlier, then go to the Admin access, then to Sites at the very end, then click on the example.com domain, change both fields to your domain or subdomain, then hit SAVE.
 
 ## You're now all set!
 
@@ -145,4 +156,4 @@ git pull
 git stash pop
 ```
 
-Then run `sudo systemctl restart shortview` to reload the project.
+Then run `sudo systemctl restart diarytrove` to reload the project.
