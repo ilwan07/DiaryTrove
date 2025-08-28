@@ -81,7 +81,6 @@ Requires=diarytrove.socket
 After=network.target
 
 [Service]
-User=[your username]
 Group=www-data
 WorkingDirectory=/home/[your username]/DiaryTrove
 ExecStart=/home/[your username]/DiaryTrove/.venv/bin/gunicorn \
@@ -101,6 +100,10 @@ Now, enable and start the socket with `sudo systemctl enable --now diarytrove.so
 If you make any change to the config afterward, run `sudo systemctl daemon-reload` then `sudo systemctl restart diarytrove` for the changes to take effect.
 
 ## Deploy with Nginx
+
+First, we need to edit the main Nginx config to allow a larger body size in order for the user to be able to upload media files.
+
+For that, edit the config file witn `sudo nano /etc/nginx/nginx.conf` and under the `http` section add a line with `client_max_body_size 15M;` by replacing the `15M` with the max body size you want to allow, set this to a little over the size limit for one memory.
 
 Now, create the Nginx config for this project with `sudo nano /etc/nginx/sites-available/diarytrove` and put this in the file:
 
