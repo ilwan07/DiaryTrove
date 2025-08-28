@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.apps import apps
 from django.conf import settings
 from django.utils import translation, timezone
@@ -19,7 +20,7 @@ def start_job_scheduler():
     """
     Start the job scheduler in a daemon thread when the django app starts
     """
-    if os.environ.get("RUN_MAIN") != "true":
+    if os.environ.get("RUN_MAIN") != "true" and settings.DEBUG == True:
         return  # Prevent starting the scheduler multiple times in development
     
     job_thread = Thread(target=jobs)
