@@ -37,7 +37,7 @@ Disable debugging by setting `DEBUG = False`, this will also indicate to the cod
 
 Also change the `TIME_ZONE` variable to your own timezone.
 
-You can change the static files folder by editing the `STATIC_ROOT` variable. Then edit the PRIVATE_MEDIA_ROOT variable, by putting the commented one on top for example, to define the folder where to store private media files (make sure that folder is not exposed anywhere!).
+You can change the static files folder by editing the `STATIC_ROOT` variable. Then edit the `PRIVATE_MEDIA_ROOT` variable, by putting the commented one on top for example, to define the folder where to store private media files (make sure that folder is not exposed anywhere!).
 
 If you want to use another platform than gmail for emails, then change the `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` and `EMAIL_USE_SSL` variables according to your email provider's documentation.
 
