@@ -85,7 +85,7 @@ Group=www-data
 WorkingDirectory=/home/[your username]/DiaryTrove
 ExecStart=/home/[your username]/DiaryTrove/.venv/bin/gunicorn \
           --access-logfile - \
-          --workers 3 \
+          --workers 1 \
           --bind unix:/run/diarytrove.sock \
           website.wsgi:application
 
