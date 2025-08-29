@@ -20,6 +20,7 @@ class ProfileInLine(admin.TabularInline):
 class MemoryInLine(admin.TabularInline):
     model = Memory
     extra = 0
+    show_change_link = True
     classes = ["collapse"]
     fields = ["title", "mood", "date", "lock_time"]
 
