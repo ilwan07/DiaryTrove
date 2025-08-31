@@ -238,7 +238,7 @@ def home(request:HttpRequest):
     
     if len(unlocked_memories) >= 1:
         latest_memory = memory_to_dict(unlocked_memories.pop(0))
-    if len(unlocked_memories) >= 2:
+    if len(unlocked_memories) >= 1:  # If there's still a memory left
         random_memory = memory_to_dict(random.choice(unlocked_memories))
 
     return render(request, "diarytrove/home.html",
