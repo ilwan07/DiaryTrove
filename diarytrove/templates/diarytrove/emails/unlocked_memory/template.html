@@ -11,7 +11,7 @@
 
 <div id="main">
     <p><b>
-        {%blocktrans with delay=memory.lock_time pluralize=memory.lock_time|pluralize%}Hey! One of your memories from {{delay}} day{{pluralize}} ago just unlocked!{%endblocktrans%}<br>
+        {%blocktrans with pluralize=delay|pluralize%}Hey! One of your memories from {{delay}} day{{pluralize}} ago just unlocked!{%endblocktrans%}<br>
         {%trans "You can have a better view at the memory and see all the associated media files on the"%} <a href="{{base_url}}{%url 'memory_view' memory.pk%}">{%trans "memory page"%}</a>.
     </b></p>
     <div class="line"></div>

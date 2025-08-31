@@ -158,7 +158,8 @@ def send_memory_emails():
         profile:Profile = memory.owner.profile
         if profile.mail_memory == 1 or (profile.mail_memory == 2 and memory.mood in memory.POSITIVE_MOODS):
             context = {"memory": memory, "content": memory.content.strip().split("\n"),
-                       "mood_emoji": memory.MOODS[memory.mood-1][1]}
+                       "mood_emoji": memory.MOODS[memory.mood-1][1],
+                       "delay": (timezone.now() - memory.date).days}
             # Get image data if there's one
             image = memory_preview_image(memory)
             attachments = []
