@@ -75,7 +75,7 @@ def auth_signup(request:HttpRequest):
                     login(request, user)
                     with translation.override(language):
                         send_email(user, "welcome", _("Welcome to DiaryTrove!"))
-                    return redirect("preferences")
+                    return redirect("home")
 
         else:
             # Properly display the error for an invalid form
