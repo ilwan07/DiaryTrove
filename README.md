@@ -1,7 +1,7 @@
 # DiaryTrove
 _"Because your memories are your most precious data"_
 
-# **Try it at [diarytrove.my.to](https://diarytrove.my.to/)**
+# **Try it at [diarytrove.ilwan.org](https://diarytrove.ilwan.org/)**
 
 DiaryTrove is a sort of mix between a personal diary and a time capsule. You can write notes whenever you feel like so. In addition to writing, you can also select your mood using an emoji selector, and even upload media files such as images, videos or even audio recordings!
 

@@ -174,6 +174,7 @@ MAX_SUBMIT_MEDIA_SIZE = 10 * 2**20  # Max medias upload size in bytes for one me
 
 # SECURITY FEATURES: uncomment these in production
 
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 #SECURE_SSL_REDIRECT = True
 #SECURE_HSTS_SECONDS = 31536000  # 1 year
 #SECURE_HSTS_INCLUDE_SUBDOMAINS = True

@@ -147,6 +147,8 @@ First obtain your certificate by executing `sudo certbot --nginx -d [your domain
 
 The certificate should automatically be loaded in your server and the Nginx config will automatically be edited too. The certificate will automatically be renewed when necessary.
 
+If you use a domain from Cloudflare, you'll need to enable the SSL/TLS encryption mode to `Custom` and then either to `Full` or `Full (Strict)`
+
 ## You're now all set!
 
 The webapp is now deployed and available on the Internet!
