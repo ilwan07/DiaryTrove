@@ -25,11 +25,13 @@ Create the file with `nano .env` and fill it like this:
 ```bash
 DJANGO_SECRET_KEY = '[secret key here]'
 WEB_DOMAIN = '[domain name here]'
-EMAIL_HOST_USER = '[email address here]'
+EMAIL_HOST_USER = '[email host here]'
 EMAIL_HOST_PASSWORD = '[email password here]'
+AGENT_EMAIL = '[email address for automated emailing]'
+CONTACT_EMAIL = '[email address for contact]'
 ```
 
-Replace (without the square brackets) `[secret key here]` with the secret key you just generated, `[domain name here]` with the domain you wish to host the website on, and replace  `[email address here]`with the address of the email you wish to use and `[email password here]` by the app specific password for the email you wish to use to send notifications (leave it blank if you don't want to use emails, it shouldn't cause issues). For a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure.
+Replace (without the square brackets) `[secret key here]` with the secret key you just generated (for a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure), `[domain name here]` with the domain or subdomain you wish to host the website on. Also replace `[email address for automated emailing]` and `[email address for contact]` by the email addresses for automated sending and for people to contact you respectively. Then replace the email host user and email host password with the relevant values, check your transactional email provider's documentation to know what to put (it will often be the email address as the user and a secret code as the password, or an api key as the user and an associated secret code as the password, etc.) (leave these blank if you don't want to use emailing features, it shouldn't cause issues).
 
 Now, we need to edit the settings file. Still from the DiaryTrove folder, open it with `nano website/settings.py`, then change any settings you wish to edit, you have to change the followings:
 
@@ -39,7 +41,7 @@ Also change the `TIME_ZONE` variable to your own timezone.
 
 You can change the static files folder by editing the `STATIC_ROOT` variable. Then edit the `PRIVATE_MEDIA_ROOT` variable, by putting the commented one on top for example, to define the folder where to store private media files (make sure that folder is not exposed anywhere!).
 
-If you want to use another platform than gmail for emails, then change the `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` and `EMAIL_USE_SSL` variables according to your email provider's documentation.
+If you want to use emailing, then change the `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` and `EMAIL_USE_SSL` variables according to your email provider's documentation (you will often only have to set the `EMAIL_HOST` with the correct domain and keep the other values like they are).
 
 Adjust the `MAX_GLOBAL_MEDIA_SIZE` and `MAX_SUBMIT_MEDIA_SIZE` to define the maximum size of media uploads in total for the whole website, and for each memory submit respectively.
 
@@ -104,6 +106,15 @@ If you make any change to the config afterward, run `sudo systemctl daemon-reloa
 First, we need to edit the main Nginx config to allow a larger body size in order for the user to be able to upload media files.
 
 For that, edit the config file witn `sudo nano /etc/nginx/nginx.conf` and under the `http` section add a line with `client_max_body_size 15M;` by replacing the `15M` with the max body size you want to allow, set this to a little over the size limit for one memory.
+
+Also make sure that the following content is present in `/etc/nginx/proxy_params`:
+
+```nginx
+proxy_set_header Host $http_host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
 
 Now, create the Nginx config for this project with `sudo nano /etc/nginx/sites-available/diarytrove` and put this in the file:
 
