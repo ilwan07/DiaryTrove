@@ -29,9 +29,10 @@ EMAIL_HOST_USER = '[email host here]'
 EMAIL_HOST_PASSWORD = '[email password here]'
 AGENT_EMAIL = '[email address for automated emailing]'
 CONTACT_EMAIL = '[email address for contact]'
+BCC_EMAIL = '[email address to give copy of sent emails]'
 ```
 
-Replace (without the square brackets) `[secret key here]` with the secret key you just generated (for a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure), `[domain name here]` with the domain or subdomain you wish to host the website on. Also replace `[email address for automated emailing]` and `[email address for contact]` by the email addresses for automated sending and for people to contact you respectively. Then replace the email host user and email host password with the relevant values, check your transactional email provider's documentation to know what to put (it will often be the email address as the user and a secret code as the password, or an api key as the user and an associated secret code as the password, etc.) (leave these blank if you don't want to use emailing features, it shouldn't cause issues).
+Replace (without the square brackets) `[secret key here]` with the secret key you just generated (for a bit more security, you can change by hand some of the characters from the secret key, this will make it more "random" and therefore more secure), `[domain name here]` with the domain or subdomain you wish to host the website on. Also replace the email fields with appropriate values, check your transactional email provider's documentation to know what to put (it will often be the email address as the user and a secret code as the password, or an api key as the user and an associated secret code as the password, etc.) (leave these blank if you don't want to use emailing features, it shouldn't cause issues).
 
 Now, we need to edit the settings file. Still from the DiaryTrove folder, open it with `nano website/settings.py`, then change any settings you wish to edit, you have to change the followings:
 

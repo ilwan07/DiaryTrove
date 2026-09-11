@@ -140,7 +140,8 @@ def send_email(user:User, template:str, subject:str, context:dict={}, sender:str
             with open(css_path, "r", encoding="utf-8") as css_file:
                 css = css_file.read()
             html_content = html_content.replace("</head>", f"\n<style>\n{css}\n</style>\n</head>")
-        email = EmailMultiAlternatives(subject, text_content, sender, [user.email])
+        bcc = [settings.BCC_EMAIL] if settings.BCC_EMAIL else []
+        email = EmailMultiAlternatives(subject, text_content, sender, [user.email], bcc=bcc)
         if html_content is not None:
             email.attach_alternative(html_content, "text/html")
         for attachment in attachments:
